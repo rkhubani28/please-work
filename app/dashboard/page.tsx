@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 type Section = "dashboard" | "recaps" | "rankings" | "trade" | "trash" | "settings";
 
@@ -396,16 +397,61 @@ function SectionTrash() {
   );
 }
 
+/* ── Yahoo League Card ── */
+function YahooLeagueCard() {
+  const connected =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("yahoo") === "connected";
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-[#11161d] p-8">
+      <h3 className="text-lg font-bold mb-4">Connected Leagues</h3>
+      {connected ? (
+        <div className="flex items-center gap-3">
+          <span className="rounded-full bg-green-500/15 px-3 py-1 text-xs font-bold text-green-400">Connected</span>
+          <span className="text-sm text-zinc-400">Yahoo Fantasy</span>
+        </div>
+      ) : (
+        <>
+          <p className="text-sm text-zinc-400 mb-4">No leagues connected yet.</p>
+          <a
+            href="/api/yahoo/auth"
+            className="inline-block rounded-xl border border-cyan-400/30 px-6 py-3 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/10"
+          >
+            + Connect Yahoo League
+          </a>
+        </>
+      )}
+    </div>
+  );
+}
+
 /* ── Settings ── */
 function SectionSettings() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [saved, setSaved] = useState(false);
 
-  function handleSave(e: React.FormEvent) {
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setEmail(data.user.email ?? "");
+        setName(data.user.user_metadata?.full_name ?? "");
+      }
+    });
+  }, []);
+
+  async function handleSave(e: React.FormEvent) {
     e.preventDefault();
+    const supabase = createClient();
+    await supabase.auth.updateUser({ data: { full_name: name } });
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
+  }
+
+  async function handleSignOut() {
+    await createClient().auth.signOut();
+    window.location.href = "/";
   }
 
   return (
@@ -446,11 +492,15 @@ function SectionSettings() {
           </form>
         </div>
 
+        <YahooLeagueCard />
+
         <div className="rounded-2xl border border-white/10 bg-[#11161d] p-8">
-          <h3 className="text-lg font-bold mb-4">Connected Leagues</h3>
-          <p className="text-sm text-zinc-400 mb-4">No leagues connected yet.</p>
-          <button className="rounded-xl border border-cyan-400/30 px-6 py-3 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/10">
-            + Connect Yahoo League
+          <h3 className="text-lg font-bold mb-4">Session</h3>
+          <button
+            onClick={handleSignOut}
+            className="rounded-xl border border-white/10 px-6 py-3 text-sm font-semibold text-zinc-300 transition hover:bg-white/5"
+          >
+            Sign out
           </button>
         </div>
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -11,26 +12,32 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-
     if (!email || !password) {
       setError("Please enter your email and password.");
       return;
     }
-
     setLoading(true);
-    // Simulate auth — replace with real auth when ready
-    setTimeout(() => {
-      router.push("/dashboard");
-    }, 800);
+    const supabase = createClient();
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    if (authError) {
+      setError(authError.message);
+      setLoading(false);
+      return;
+    }
+    router.push("/dashboard");
+    router.refresh();
+  }
+
+  function handleYahoo() {
+    window.location.href = "/api/yahoo/auth";
   }
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#070b11] px-6">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="mb-10 flex flex-col items-center gap-3">
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400 text-black font-black text-lg">
@@ -38,25 +45,18 @@ export default function LoginPage() {
             </div>
             <div>
               <div className="text-2xl font-black text-white">SportsHQ</div>
-              <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">
-                Gridiron
-              </div>
+              <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">Gridiron</div>
             </div>
           </Link>
         </div>
 
-        {/* Card */}
         <div className="rounded-3xl border border-white/10 bg-[#11161d] p-10">
           <h1 className="text-3xl font-black text-white">Sign in</h1>
-          <p className="mt-2 text-sm text-zinc-400">
-            Access your Gridiron dashboard
-          </p>
+          <p className="mt-2 text-sm text-zinc-400">Access your Gridiron dashboard</p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             <div>
-              <label className="mb-2 block text-sm font-medium text-zinc-300">
-                Email
-              </label>
+              <label className="mb-2 block text-sm font-medium text-zinc-300">Email</label>
               <input
                 type="email"
                 value={email}
@@ -65,11 +65,8 @@ export default function LoginPage() {
                 className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30"
               />
             </div>
-
             <div>
-              <label className="mb-2 block text-sm font-medium text-zinc-300">
-                Password
-              </label>
+              <label className="mb-2 block text-sm font-medium text-zinc-300">Password</label>
               <input
                 type="password"
                 value={password}
@@ -78,11 +75,7 @@ export default function LoginPage() {
                 className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30"
               />
             </div>
-
-            {error && (
-              <p className="text-sm text-red-400">{error}</p>
-            )}
-
+            {error && <p className="text-sm text-red-400">{error}</p>}
             <button
               type="submit"
               disabled={loading}
@@ -99,11 +92,9 @@ export default function LoginPage() {
           </div>
 
           <button
-            onClick={() => {
-              setLoading(true);
-              setTimeout(() => router.push("/dashboard"), 800);
-            }}
-            className="mt-6 w-full rounded-xl border border-white/10 bg-white/5 py-3.5 font-semibold text-white transition hover:border-cyan-400/40 hover:bg-white/10"
+            onClick={handleYahoo}
+            disabled={loading}
+            className="mt-6 w-full rounded-xl border border-white/10 bg-white/5 py-3.5 font-semibold text-white transition hover:border-cyan-400/40 hover:bg-white/10 disabled:opacity-60"
           >
             Continue with Yahoo Fantasy
           </button>
@@ -111,9 +102,7 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-zinc-500">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-cyan-400 hover:text-cyan-300">
-            Sign up
-          </Link>
+          <Link href="/signup" className="text-cyan-400 hover:text-cyan-300">Sign up</Link>
         </p>
       </div>
     </main>
