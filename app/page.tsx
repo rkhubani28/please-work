@@ -47,42 +47,15 @@ export default function HomePage() {
       {/* Product Engines */}
       <section id="engines" className="mx-auto max-w-7xl px-6 pb-24">
         <div className="mb-12">
-          <div className="text-sm uppercase tracking-[0.3em] text-cyan-300">
-            Product Engines
-          </div>
+          <div className="text-sm uppercase tracking-[0.3em] text-cyan-300">Product Engines</div>
           <h2 className="mt-4 text-5xl font-black">Built For Every Fantasy League.</h2>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <ProductCard
-            name="Gridiron"
-            description="Fantasy Football AI Assistant"
-            status="LIVE"
-            live
-            logo="/logos/gridiron.png"
-            accent="#ef4444"
-          />
-          <ProductCard
-            name="Rink"
-            description="Fantasy Hockey AI Assistant"
-            status="COMING SOON"
-            logo="/logos/rink.png"
-            accent="#3b82f6"
-          />
-          <ProductCard
-            name="Hoops"
-            description="Fantasy Basketball AI Assistant"
-            status="COMING SOON"
-            logo="/logos/hoops.png"
-            accent="#f97316"
-          />
-          <ProductCard
-            name="Dugout"
-            description="Fantasy Baseball AI Assistant"
-            status="COMING SOON"
-            logo="/logos/dugout.png"
-            accent="#22c55e"
-          />
+          <ProductCard name="Gridiron" description="Fantasy Football AI Assistant" status="LIVE" live accent="#ef4444" />
+          <ProductCard name="Rink"     description="Fantasy Hockey AI Assistant"   status="COMING SOON" accent="#3b82f6" />
+          <ProductCard name="Hoops"    description="Fantasy Basketball AI Assistant" status="COMING SOON" accent="#f97316" />
+          <ProductCard name="Dugout"   description="Fantasy Baseball AI Assistant"   status="COMING SOON" accent="#22c55e" />
         </div>
       </section>
     </main>

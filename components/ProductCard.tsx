@@ -1,29 +1,27 @@
 import Link from "next/link";
-import Image from "next/image";
+import { GridironLogo, RinkLogo, HoopsLogo, DugoutLogo } from "@/components/SportLogo";
+import type { ReactNode } from "react";
+
+const LOGOS: Record<string, ReactNode> = {
+  Gridiron: <GridironLogo size={72} />,
+  Rink: <RinkLogo size={72} />,
+  Hoops: <HoopsLogo size={72} />,
+  Dugout: <DugoutLogo size={72} />,
+};
 
 type Props = {
   name: string;
   description: string;
   status: string;
   live?: boolean;
-  logo: string;
   accent: string;
 };
 
-export default function ProductCard({ name, description, status, live, logo, accent }: Props) {
+export default function ProductCard({ name, description, status, live, accent }: Props) {
   return (
-    <div
-      className="group rounded-3xl border border-white/10 bg-[#11161d] p-8 transition-all duration-200 hover:-translate-y-1"
-      style={{ ["--accent" as string]: accent }}
-    >
+    <div className="rounded-3xl border border-white/10 bg-[#11161d] p-8 transition-all duration-200 hover:-translate-y-1 hover:border-white/20">
       <div className="flex items-start justify-between mb-6">
-        <Image
-          src={logo}
-          alt={`${name} logo`}
-          width={80}
-          height={80}
-          className="object-contain"
-        />
+        <div>{LOGOS[name]}</div>
         <div
           className={`inline-flex rounded-full px-3 py-1 text-xs font-bold tracking-wide ${
             live ? "bg-cyan-400/15 text-cyan-300" : "bg-zinc-800 text-zinc-400"
@@ -39,7 +37,8 @@ export default function ProductCard({ name, description, status, live, logo, acc
       {live ? (
         <Link
           href="/login"
-          className="mt-10 inline-block rounded-xl bg-cyan-400 px-6 py-3 font-semibold text-black transition hover:bg-cyan-300"
+          className="mt-10 inline-block rounded-xl px-6 py-3 font-semibold text-black transition hover:opacity-90"
+          style={{ backgroundColor: accent }}
         >
           Open Engine
         </Link>
