@@ -19,11 +19,11 @@ export default function Navbar() {
 
         <nav className="hidden gap-8 text-zinc-300 md:flex">
           <a href="#engines" className="hover:text-white">Products</a>
-          <a href="#future" className="hover:text-white">Roadmap</a>
+          <a href="#engines" className="hover:text-white">Roadmap</a>
         </nav>
 
         <Link
-          href="/dashboard"
+          href="/login"
           className="rounded-xl bg-cyan-400 px-5 py-3 font-semibold text-black transition hover:bg-cyan-300"
         >
           Launch Gridiron

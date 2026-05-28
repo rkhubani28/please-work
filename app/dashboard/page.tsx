@@ -17,14 +17,14 @@ export default function DashboardPage() {
           </div>
 
           <nav className="space-y-3">
-            <div className="rounded-xl bg-cyan-400/10 p-4 text-cyan-300">
+            <div className="cursor-pointer rounded-xl bg-cyan-400/10 p-4 text-cyan-300">
               Dashboard
             </div>
 
-            <div className="rounded-xl p-4 text-zinc-400">Recaps</div>
-            <div className="rounded-xl p-4 text-zinc-400">Power Rankings</div>
-            <div className="rounded-xl p-4 text-zinc-400">Trade Analyzer</div>
-            <div className="rounded-xl p-4 text-zinc-400">Trash Talk</div>
+            <div className="cursor-pointer rounded-xl p-4 text-zinc-400 transition hover:bg-white/5 hover:text-white">Recaps</div>
+            <div className="cursor-pointer rounded-xl p-4 text-zinc-400 transition hover:bg-white/5 hover:text-white">Power Rankings</div>
+            <div className="cursor-pointer rounded-xl p-4 text-zinc-400 transition hover:bg-white/5 hover:text-white">Trade Analyzer</div>
+            <div className="cursor-pointer rounded-xl p-4 text-zinc-400 transition hover:bg-white/5 hover:text-white">Trash Talk</div>
           </nav>
         </aside>
 

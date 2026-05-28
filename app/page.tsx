@@ -29,15 +29,18 @@ export default function HomePage() {
 
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Link
-              href="/dashboard"
+              href="/login"
               className="rounded-xl bg-cyan-400 px-8 py-4 font-semibold text-black transition hover:bg-cyan-300"
             >
               Launch Gridiron
             </Link>
 
-            <button className="rounded-xl border border-white/10 bg-white/5 px-8 py-4 font-semibold transition hover:border-cyan-400/40">
+            <a
+              href="#engines"
+              className="rounded-xl border border-white/10 bg-white/5 px-8 py-4 font-semibold transition hover:border-cyan-400/40"
+            >
               Platform Roadmap
-            </button>
+            </a>
           </div>
         </div>
       </section>
