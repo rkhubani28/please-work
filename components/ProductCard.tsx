@@ -1,32 +1,39 @@
 import Link from "next/link";
+import Image from "next/image";
 
 type Props = {
   name: string;
   description: string;
   status: string;
   live?: boolean;
+  logo: string;
+  accent: string;
 };
 
-export default function ProductCard({
-  name,
-  description,
-  status,
-  live,
-}: Props) {
+export default function ProductCard({ name, description, status, live, logo, accent }: Props) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-[#11161d] p-8 transition-all duration-200 hover:border-cyan-400/50 hover:-translate-y-1">
-      <div
-        className={`inline-flex rounded-full px-3 py-1 text-xs font-bold tracking-wide ${
-          live
-            ? "bg-cyan-400/15 text-cyan-300"
-            : "bg-zinc-800 text-zinc-400"
-        }`}
-      >
-        {status}
+    <div
+      className="group rounded-3xl border border-white/10 bg-[#11161d] p-8 transition-all duration-200 hover:-translate-y-1"
+      style={{ ["--accent" as string]: accent }}
+    >
+      <div className="flex items-start justify-between mb-6">
+        <Image
+          src={logo}
+          alt={`${name} logo`}
+          width={80}
+          height={80}
+          className="object-contain"
+        />
+        <div
+          className={`inline-flex rounded-full px-3 py-1 text-xs font-bold tracking-wide ${
+            live ? "bg-cyan-400/15 text-cyan-300" : "bg-zinc-800 text-zinc-400"
+          }`}
+        >
+          {status}
+        </div>
       </div>
 
-      <h3 className="mt-6 text-5xl font-black">{name}</h3>
-
+      <h3 className="text-5xl font-black">{name}</h3>
       <p className="mt-4 text-lg text-zinc-400">{description}</p>
 
       {live ? (

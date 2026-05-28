@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 
 type Section = "dashboard" | "recaps" | "rankings" | "trade" | "trash" | "settings";
@@ -22,9 +23,7 @@ export default function DashboardPage() {
       <div className="flex">
         <aside className="min-h-screen w-72 border-r border-white/10 bg-black/30 p-6 flex flex-col">
           <div className="mb-12 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-400 text-black font-black">
-              HQ
-            </div>
+            <Image src="/logos/gridiron.png" alt="Gridiron" width={44} height={44} className="object-contain" />
             <div>
               <div className="text-2xl font-black">SportsHQ</div>
               <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">Gridiron</div>
