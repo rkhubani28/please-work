@@ -237,39 +237,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Honest positioning */}
-        <section className="px-5 pb-24">
-          <div className="max-w-3xl mx-auto rounded-2xl border border-white/10 bg-surface-1/40 p-10 glass-blur">
-            <p className="label-caps text-zinc-600 mb-4">Honest calibration</p>
-            <h2 className="text-2xl font-bold mb-4">We're new. Here's what that means.</h2>
-            <div className="space-y-4 text-sm text-on-surface-variant">
-              <p>
-                <span className="text-white font-semibold">On accuracy:</span> FantasyPros has a
-                decade of tracked accuracy and 500,000+ customers. We don't. We track our start/sit
-                and projection calls from day one and publish every result — you can see exactly
-                how we're doing on the{" "}
-                <Link href="/accuracy" className="text-football-cyan hover:underline">accuracy page</Link>.
-              </p>
-              <p>
-                <span className="text-white font-semibold">On price:</span> We're cheaper because
-                we run on free inference (Groq) and free open data. Our near-zero marginal cost
-                means the low price is still profitable — not a VC subsidy burning down.
-              </p>
-              <p>
-                <span className="text-white font-semibold">On scope:</span> NFL only, Yahoo + Sleeper
-                only, no live-draft tool. We ship a focused v0 and expand based on what the league
-                actually wants.
-              </p>
-            </div>
-            <Link
-              href="/accuracy"
-              className="mt-6 inline-block text-sm font-bold text-football-cyan hover:underline"
-            >
-              View our accuracy tracking →
-            </Link>
-          </div>
-        </section>
-
         {/* Final CTA */}
         <section className="px-5 pb-32 text-center">
           <div className="max-w-xl mx-auto">
