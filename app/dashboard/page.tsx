@@ -397,36 +397,105 @@ function SectionTrade() {
   );
 }
 
-/* ── Yahoo League Card ── */
-function YahooLeagueCard() {
-  const [connected, setConnected] = useState<boolean | null>(null);
+/* ── League Connections Card ── */
+function LeagueConnectionsCard() {
+  const [yahooConnected, setYahooConnected] = useState<boolean | null>(null);
+  const [sleeperConnected, setSleeperConnected] = useState<boolean | null>(null);
+  const [sleeperUsername, setSleeperUsername] = useState("");
+  const [sleeperInput, setSleeperInput] = useState("");
+  const [sleeperLoading, setSleeperLoading] = useState(false);
+  const [sleeperError, setSleeperError] = useState("");
 
   useEffect(() => {
     fetch("/api/yahoo/status")
       .then((r) => r.json())
-      .then((d) => setConnected(Boolean(d.connected)))
-      .catch(() => setConnected(false));
+      .then((d) => setYahooConnected(Boolean(d.connected)))
+      .catch(() => setYahooConnected(false));
+
+    fetch("/api/sleeper/status")
+      .then((r) => r.json())
+      .then((d) => {
+        setSleeperConnected(Boolean(d.connected));
+        if (d.username) setSleeperUsername(d.username);
+      })
+      .catch(() => setSleeperConnected(false));
   }, []);
+
+  async function connectSleeper(e: React.FormEvent) {
+    e.preventDefault();
+    if (!sleeperInput.trim()) return;
+    setSleeperLoading(true);
+    setSleeperError("");
+    try {
+      const res = await fetch("/api/sleeper/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: sleeperInput.trim() }),
+      });
+      const data = await res.json();
+      if (data.error) { setSleeperError(data.error); return; }
+      setSleeperConnected(true);
+      setSleeperUsername(sleeperInput.trim());
+    } catch {
+      setSleeperError("Failed to connect. Try again.");
+    } finally {
+      setSleeperLoading(false);
+    }
+  }
 
   return (
     <div className="rounded-2xl border border-white/10 bg-[#11161d] p-8">
-      <h3 className="text-lg font-bold mb-4">Connected Leagues</h3>
-      {connected ? (
-        <div className="flex items-center gap-3">
-          <span className="rounded-full bg-green-500/15 px-3 py-1 text-xs font-bold text-green-400">Connected</span>
-          <span className="text-sm text-zinc-400">Yahoo Fantasy</span>
+      <h3 className="text-lg font-bold mb-6">Connected Leagues</h3>
+
+      {/* Yahoo */}
+      <div className="mb-5 pb-5 border-b border-white/10">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-semibold">Yahoo Fantasy</span>
+          {yahooConnected ? (
+            <span className="rounded-full bg-green-500/15 px-3 py-1 text-xs font-bold text-green-400">Connected</span>
+          ) : (
+            <a
+              href="/api/yahoo/auth"
+              className="rounded-lg border border-cyan-400/30 px-4 py-1.5 text-xs font-semibold text-cyan-300 transition hover:bg-cyan-400/10"
+            >
+              + Connect
+            </a>
+          )}
         </div>
-      ) : (
-        <>
-          <p className="text-sm text-zinc-400 mb-4">No leagues connected yet.</p>
-          <a
-            href="/api/yahoo/auth"
-            className="inline-block rounded-xl border border-cyan-400/30 px-6 py-3 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/10"
-          >
-            + Connect Yahoo League
-          </a>
-        </>
-      )}
+        <p className="text-xs text-zinc-600">OAuth connection — your league data is fetched securely.</p>
+      </div>
+
+      {/* Sleeper */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-semibold">Sleeper</span>
+          {sleeperConnected && (
+            <span className="rounded-full bg-green-500/15 px-3 py-1 text-xs font-bold text-green-400">
+              Connected · @{sleeperUsername}
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-zinc-600 mb-3">Enter your Sleeper username — no OAuth needed, Sleeper's API is public.</p>
+        {!sleeperConnected && (
+          <form onSubmit={connectSleeper} className="flex gap-2">
+            <input
+              type="text"
+              value={sleeperInput}
+              onChange={(e) => setSleeperInput(e.target.value)}
+              placeholder="Your Sleeper username"
+              className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none transition focus:border-cyan-400/60"
+            />
+            <button
+              type="submit"
+              disabled={sleeperLoading}
+              className="rounded-lg bg-cyan-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-cyan-300 disabled:opacity-60"
+            >
+              {sleeperLoading ? "…" : "Connect"}
+            </button>
+          </form>
+        )}
+        {sleeperError && <p className="mt-2 text-xs text-red-400">{sleeperError}</p>}
+      </div>
     </div>
   );
 }
@@ -497,7 +566,7 @@ function SectionSettings() {
           </form>
         </div>
 
-        <YahooLeagueCard />
+        <LeagueConnectionsCard />
 
         <div className="rounded-2xl border border-white/10 bg-[#11161d] p-8">
           <h3 className="text-lg font-bold mb-4">Session</h3>

@@ -170,16 +170,7 @@ function DashboardView({
       {/* Leagues & Content */}
       <div className="max-w-6xl mx-auto p-8">
         {leagues.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center glass-blur">
-            <h2 className="text-2xl font-bold mb-4">No leagues connected</h2>
-            <p className="text-on-surface-variant mb-6">Connect your Yahoo or Sleeper league to see your custom content and tools.</p>
-            <a
-              href="/api/yahoo/auth"
-              className="inline-block rounded-xl bg-football-cyan px-6 py-3 font-bold text-obsidian-900 transition hover:bg-football-cyan/80"
-            >
-              Connect Yahoo League
-            </a>
-          </div>
+          <ConnectLeagues />
         ) : (
           <div className="grid md:grid-cols-2 gap-8">
             {leagues.map((league) => (
@@ -254,6 +245,85 @@ function LeagueCard({
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function ConnectLeagues() {
+  const [sleeperInput, setSleeperInput] = useState("");
+  const [sleeperLoading, setSleeperLoading] = useState(false);
+  const [sleeperError, setSleeperError] = useState("");
+  const [sleeperDone, setSleeperDone] = useState(false);
+
+  async function connectSleeper(e: React.FormEvent) {
+    e.preventDefault();
+    if (!sleeperInput.trim()) return;
+    setSleeperLoading(true);
+    setSleeperError("");
+    try {
+      const res = await fetch("/api/sleeper/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: sleeperInput.trim() }),
+      });
+      const data = await res.json();
+      if (data.error) { setSleeperError(data.error); return; }
+      setSleeperDone(true);
+      setTimeout(() => window.location.reload(), 1000);
+    } catch {
+      setSleeperError("Failed to connect. Try again.");
+    } finally {
+      setSleeperLoading(false);
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-12 glass-blur">
+      <h2 className="text-2xl font-bold mb-2">Connect a league</h2>
+      <p className="text-on-surface-variant mb-8 text-sm">
+        Connect your Yahoo or Sleeper league to unlock your plan's content and tools.
+      </p>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Yahoo */}
+        <div className="rounded-xl border border-white/10 bg-black/30 p-6">
+          <div className="label-caps text-football-cyan mb-3">Yahoo Fantasy</div>
+          <p className="text-sm text-on-surface-variant mb-4">OAuth connection — click to authorize.</p>
+          <a
+            href="/api/yahoo/auth"
+            className="block w-full rounded-lg bg-football-cyan px-4 py-3 text-center text-sm font-bold text-obsidian-900 transition hover:bg-football-cyan/80"
+          >
+            Connect Yahoo →
+          </a>
+        </div>
+
+        {/* Sleeper */}
+        <div className="rounded-xl border border-white/10 bg-black/30 p-6">
+          <div className="label-caps text-football-cyan mb-3">Sleeper</div>
+          <p className="text-sm text-on-surface-variant mb-4">Enter your Sleeper username — no OAuth needed.</p>
+          {sleeperDone ? (
+            <p className="text-sm text-green-400 font-semibold">Connected! Refreshing…</p>
+          ) : (
+            <form onSubmit={connectSleeper} className="flex gap-2">
+              <input
+                type="text"
+                value={sleeperInput}
+                onChange={(e) => setSleeperInput(e.target.value)}
+                placeholder="username"
+                className="flex-1 min-w-0 rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white placeholder-zinc-600 outline-none focus:border-football-cyan/60"
+              />
+              <button
+                type="submit"
+                disabled={sleeperLoading}
+                className="rounded-lg bg-football-cyan px-4 py-2 text-sm font-bold text-obsidian-900 transition hover:bg-football-cyan/80 disabled:opacity-60"
+              >
+                {sleeperLoading ? "…" : "→"}
+              </button>
+            </form>
+          )}
+          {sleeperError && <p className="mt-2 text-xs text-red-400">{sleeperError}</p>}
+        </div>
+      </div>
     </div>
   );
 }
