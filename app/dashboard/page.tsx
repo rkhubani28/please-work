@@ -109,16 +109,77 @@ function Gated({
           Connect your fantasy league to unlock {feature.toLowerCase()} and every
           other SportsHQ feature.
         </p>
-        <a
-          href="/api/yahoo/auth"
-          className="mt-8 rounded-xl bg-cyan-400 px-8 py-4 font-semibold text-black transition hover:bg-cyan-300"
-        >
-          Connect Yahoo League
-        </a>
+        <ConnectLeaguePrompt className="mt-8 items-stretch" />
       </div>
     );
   }
   return <>{children}</>;
+}
+
+/* ── Connect prompt (Yahoo + Sleeper) ── */
+function ConnectLeaguePrompt({ className = "" }: { className?: string }) {
+  const [sleeperInput, setSleeperInput] = useState("");
+  const [sleeperLoading, setSleeperLoading] = useState(false);
+  const [sleeperError, setSleeperError] = useState("");
+
+  async function connectSleeper(e: React.FormEvent) {
+    e.preventDefault();
+    if (!sleeperInput.trim()) return;
+    setSleeperLoading(true);
+    setSleeperError("");
+    try {
+      const res = await fetch("/api/sleeper/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: sleeperInput.trim() }),
+      });
+      const data = await res.json();
+      if (data.error) { setSleeperError(data.error); return; }
+      window.location.reload();
+    } catch {
+      setSleeperError("Failed to connect. Try again.");
+    } finally {
+      setSleeperLoading(false);
+    }
+  }
+
+  return (
+    <div className={`flex w-full max-w-md flex-col gap-4 ${className}`}>
+      <a
+        href="/api/yahoo/auth"
+        className="rounded-xl bg-cyan-400 px-8 py-4 text-center font-semibold text-black transition hover:bg-cyan-300"
+      >
+        Connect Yahoo League
+      </a>
+
+      <div className="flex items-center gap-3 text-xs text-zinc-600">
+        <span className="h-px flex-1 bg-white/10" />
+        or use Sleeper
+        <span className="h-px flex-1 bg-white/10" />
+      </div>
+
+      <form onSubmit={connectSleeper} className="flex gap-2">
+        <input
+          type="text"
+          value={sleeperInput}
+          onChange={(e) => setSleeperInput(e.target.value)}
+          placeholder="Your Sleeper username"
+          className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-cyan-400/60"
+        />
+        <button
+          type="submit"
+          disabled={sleeperLoading}
+          className="rounded-xl border border-cyan-400/30 px-5 py-3 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/10 disabled:opacity-60"
+        >
+          {sleeperLoading ? "…" : "Connect"}
+        </button>
+      </form>
+      <p className="text-left text-xs text-zinc-600">
+        Sleeper needs no OAuth — its API is public. Just enter your username.
+      </p>
+      {sleeperError && <p className="text-left text-xs text-red-400">{sleeperError}</p>}
+    </div>
+  );
 }
 
 /* ── Dashboard ── */
@@ -145,12 +206,7 @@ function SectionDashboard({ connected }: { connected: boolean | null }) {
           <p className="mt-10 text-zinc-400">
             Connect your league to unlock recaps, rankings, and trade analysis.
           </p>
-          <a
-            href="/api/yahoo/auth"
-            className="mt-4 inline-block rounded-xl bg-cyan-400 px-8 py-4 font-semibold text-black transition hover:bg-cyan-300"
-          >
-            Connect Yahoo League
-          </a>
+          <ConnectLeaguePrompt className="mt-4" />
         </>
       )}
     </div>

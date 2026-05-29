@@ -25,8 +25,8 @@ export default function Footer() {
           <div>
             <div className="label-caps text-zinc-600 mb-3">Platform</div>
             <ul className="space-y-2 text-sm text-zinc-500">
-              <li><span className="text-football-cyan/70">Yahoo Fantasy</span></li>
-              <li><span className="text-football-cyan/70">Sleeper</span></li>
+              <li><Link href="/signup" className="text-football-cyan/70 hover:text-football-cyan transition">Yahoo Fantasy</Link></li>
+              <li><Link href="/signup" className="text-football-cyan/70 hover:text-football-cyan transition">Sleeper</Link></li>
               <li className="text-zinc-700">ESPN (coming)</li>
             </ul>
           </div>
