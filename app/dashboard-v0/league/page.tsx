@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useSearchParams } from "next/navigation";
@@ -7,6 +8,14 @@ import { PLANS, TIERS, getPlanContent, getPlanAnalytics } from "@/lib/pricing";
 import type { PlanType, TierType } from "@/lib/types";
 
 export default function LeaguePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-obsidian-900 text-on-surface p-8">Loading...</div>}>
+      <LeaguePageContent />
+    </Suspense>
+  );
+}
+
+function LeaguePageContent() {
   const searchParams = useSearchParams();
   const leagueId = searchParams.get("id");
   const planParam = (searchParams.get("plan") as PlanType) || "double";
