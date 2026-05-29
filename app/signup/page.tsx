@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { SportsHQLogo } from "@/components/SportLogo";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export default function SignupPage() {
   if (success) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-black px-6">
-        <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(249,115,22,0.10),transparent_45%)]" />
+        <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(0,240,255,0.10),transparent_45%)]" />
         <div className="relative w-full max-w-md text-center">
           <div className="glass-card rounded-xl p-12">
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-4xl text-primary">
@@ -81,13 +82,11 @@ export default function SignupPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-black px-6 py-16">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(249,115,22,0.10),transparent_45%)]" />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(0,240,255,0.10),transparent_45%)]" />
       <div className="relative w-full max-w-md">
         <div className="mb-10 flex flex-col items-center gap-3">
           <Link href="/" className="flex items-center gap-3">
-            <div className="btn-primary flex h-12 w-12 items-center justify-center rounded-lg font-display text-lg font-extrabold">
-              HQ
-            </div>
+            <SportsHQLogo size={44} />
             <div>
               <div className="font-display text-2xl font-extrabold text-white">SportsHQ</div>
               <div className="label-caps text-zinc-500">Gridiron</div>
@@ -107,7 +106,7 @@ export default function SignupPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="John Smith"
-                className="w-full rounded-lg border border-glass bg-black px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-electric/60 focus:shadow-glow-blue"
+                className="w-full rounded-lg border border-glass bg-black px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-primary/60 focus:shadow-glow"
               />
             </div>
             <div>
@@ -117,7 +116,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full rounded-lg border border-glass bg-black px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-electric/60 focus:shadow-glow-blue"
+                className="w-full rounded-lg border border-glass bg-black px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-primary/60 focus:shadow-glow"
               />
             </div>
             <div>
@@ -127,7 +126,7 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Min. 8 characters"
-                className="w-full rounded-lg border border-glass bg-black px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-electric/60 focus:shadow-glow-blue"
+                className="w-full rounded-lg border border-glass bg-black px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-primary/60 focus:shadow-glow"
               />
             </div>
             <div>
@@ -137,7 +136,7 @@ export default function SignupPage() {
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-lg border border-glass bg-black px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-electric/60 focus:shadow-glow-blue"
+                className="w-full rounded-lg border border-glass bg-black px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-primary/60 focus:shadow-glow"
               />
             </div>
             {error && <p className="text-sm text-red-400">{error}</p>}

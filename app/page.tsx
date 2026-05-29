@@ -65,42 +65,49 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Analytics highlight */}
+        {/* How it works */}
         <section className="relative z-10 px-5 pb-32">
           <div className="mx-auto max-w-[1280px] overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl glass-blur">
-            <div className="flex flex-col items-center md:flex-row">
+            <div className="flex flex-col md:flex-row">
               <div className="p-10 md:w-1/2">
                 <span className="mb-4 block font-mono text-[11px] uppercase tracking-[0.2em] text-football-cyan">
-                  DATA_VIZ / PROFESSIONAL
+                  HOW_IT_WORKS
                 </span>
                 <h2 className="mb-4 font-display text-[32px] font-bold leading-[1.1] tracking-tight">
-                  Elite Fantasy Analytics for Professionals
+                  Connect your league. Let the AI do the rest.
                 </h2>
                 <p className="mb-8 text-lg text-on-surface-variant">
-                  Access the same neural models used by top-tier fantasy professionals.
-                  Our engines crunch millions of data points per minute to give you the
-                  winning edge.
+                  Gridiron links to your Yahoo Fantasy Football league and turns your
+                  real matchups, scores, and rosters into AI-written insights. No
+                  setup, no spreadsheets — every feature unlocks the moment your
+                  league is connected.
                 </p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-xl border border-white/10 bg-black/40 p-4 backdrop-blur-md">
-                    <span className="block font-mono text-2xl font-bold text-football-cyan">99.8%</span>
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant">
-                      Accuracy
-                    </span>
-                  </div>
-                  <div className="rounded-xl border border-white/10 bg-black/40 p-4 backdrop-blur-md">
-                    <span className="block font-mono text-2xl font-bold text-football-cyan">5ms</span>
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant">
-                      Latency
-                    </span>
-                  </div>
+                <div className="space-y-3">
+                  {[
+                    ["01", "Connect your Yahoo Fantasy league in one click"],
+                    ["02", "Get AI-written weekly recaps of your matchups"],
+                    ["03", "See power rankings and analyze trades instantly"],
+                  ].map(([num, text]) => (
+                    <div key={num} className="flex items-center gap-4 rounded-xl border border-white/10 bg-black/40 p-4 backdrop-blur-md">
+                      <span className="font-mono text-sm font-bold text-football-cyan">{num}</span>
+                      <span className="text-on-surface-variant">{text}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div className="relative h-[400px] w-full overflow-hidden bg-black md:w-1/2">
-                <div className="absolute inset-0 grid-overlay opacity-60" />
-                <div className="absolute inset-0 bg-gradient-to-br from-football-cyan/20 via-transparent to-hockey-red/20" />
-                <div className="absolute inset-0 scanline-overlay opacity-20" />
-                <div className="absolute inset-0 bg-gradient-to-r from-obsidian-900 via-transparent to-transparent" />
+              <div className="flex flex-col justify-center gap-6 p-10 md:w-1/2">
+                <div className="rounded-2xl border border-white/10 bg-black/40 p-6 backdrop-blur-md">
+                  <div className="mb-2 font-mono text-[11px] uppercase tracking-widest text-football-cyan">Weekly Recaps</div>
+                  <p className="text-on-surface-variant">Beat-reporter-style summaries of every matchup, written from your actual box scores.</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-black/40 p-6 backdrop-blur-md">
+                  <div className="mb-2 font-mono text-[11px] uppercase tracking-widest text-football-cyan">Power Rankings</div>
+                  <p className="text-on-surface-variant">League-wide rankings with trend calls and AI commentary on who&apos;s rising and falling.</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-black/40 p-6 backdrop-blur-md">
+                  <div className="mb-2 font-mono text-[11px] uppercase tracking-widest text-football-cyan">Trade Analyzer</div>
+                  <p className="text-on-surface-variant">Paste any proposed trade and get a clear Accept / Decline / Neutral verdict with reasoning.</p>
+                </div>
               </div>
             </div>
           </div>
