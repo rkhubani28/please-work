@@ -56,19 +56,20 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#070b11] px-6">
-        <div className="w-full max-w-md text-center">
-          <div className="rounded-3xl border border-white/10 bg-[#11161d] p-12">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-cyan-400/10 text-4xl">
+      <main className="flex min-h-screen items-center justify-center bg-black px-6">
+        <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(249,115,22,0.10),transparent_45%)]" />
+        <div className="relative w-full max-w-md text-center">
+          <div className="glass-card rounded-xl p-12">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-4xl text-primary">
               ✓
             </div>
-            <h2 className="text-2xl font-black text-white">Check your email</h2>
+            <h2 className="font-display text-2xl font-extrabold text-white">Check your email</h2>
             <p className="mt-3 text-zinc-400">
               We sent a confirmation link to <span className="text-white">{email}</span>. Click it to activate your account.
             </p>
             <Link
               href="/login"
-              className="mt-8 inline-block rounded-xl bg-cyan-400 px-8 py-3 font-semibold text-black transition hover:bg-cyan-300"
+              className="btn-primary mt-8 inline-block rounded-2xl px-8 py-3 font-bold"
             >
               Back to sign in
             </Link>
@@ -79,22 +80,23 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#070b11] px-6 py-16">
-      <div className="w-full max-w-md">
+    <main className="flex min-h-screen items-center justify-center bg-black px-6 py-16">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,rgba(249,115,22,0.10),transparent_45%)]" />
+      <div className="relative w-full max-w-md">
         <div className="mb-10 flex flex-col items-center gap-3">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400 text-black font-black text-lg">
+            <div className="btn-primary flex h-12 w-12 items-center justify-center rounded-lg font-display text-lg font-extrabold">
               HQ
             </div>
             <div>
-              <div className="text-2xl font-black text-white">SportsHQ</div>
-              <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">Gridiron</div>
+              <div className="font-display text-2xl font-extrabold text-white">SportsHQ</div>
+              <div className="label-caps text-zinc-500">Gridiron</div>
             </div>
           </Link>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-[#11161d] p-10">
-          <h1 className="text-3xl font-black text-white">Create account</h1>
+        <div className="glass-card rounded-xl p-10">
+          <h1 className="font-display text-3xl font-extrabold text-white">Create account</h1>
           <p className="mt-2 text-sm text-zinc-400">Join SportsHQ and start dominating your league</p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
@@ -105,7 +107,7 @@ export default function SignupPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="John Smith"
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30"
+                className="w-full rounded-lg border border-glass bg-black px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-electric/60 focus:shadow-glow-blue"
               />
             </div>
             <div>
@@ -115,7 +117,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30"
+                className="w-full rounded-lg border border-glass bg-black px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-electric/60 focus:shadow-glow-blue"
               />
             </div>
             <div>
@@ -125,7 +127,7 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Min. 8 characters"
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30"
+                className="w-full rounded-lg border border-glass bg-black px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-electric/60 focus:shadow-glow-blue"
               />
             </div>
             <div>
@@ -135,14 +137,14 @@ export default function SignupPage() {
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30"
+                className="w-full rounded-lg border border-glass bg-black px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-electric/60 focus:shadow-glow-blue"
               />
             </div>
             {error && <p className="text-sm text-red-400">{error}</p>}
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-cyan-400 py-3.5 font-semibold text-black transition hover:bg-cyan-300 disabled:opacity-60"
+              className="btn-primary w-full rounded-2xl py-3.5 font-bold disabled:opacity-60"
             >
               {loading ? "Creating account…" : "Create account"}
             </button>
@@ -150,14 +152,14 @@ export default function SignupPage() {
 
           <div className="mt-6 flex items-center gap-3">
             <div className="h-px flex-1 bg-white/10" />
-            <span className="text-xs text-zinc-500">or</span>
+            <span className="label-caps text-zinc-600">or</span>
             <div className="h-px flex-1 bg-white/10" />
           </div>
 
           <button
             onClick={handleYahoo}
             disabled={loading}
-            className="mt-6 w-full rounded-xl border border-white/10 bg-white/5 py-3.5 font-semibold text-white transition hover:border-cyan-400/40 hover:bg-white/10 disabled:opacity-60"
+            className="btn-ghost mt-6 w-full rounded-2xl py-3.5 font-semibold disabled:opacity-60"
           >
             Continue with Yahoo Fantasy
           </button>
@@ -165,7 +167,7 @@ export default function SignupPage() {
 
         <p className="mt-6 text-center text-sm text-zinc-500">
           Already have an account?{" "}
-          <Link href="/login" className="text-cyan-400 hover:text-cyan-300">Sign in</Link>
+          <Link href="/login" className="text-primary hover:text-primary-soft">Sign in</Link>
         </p>
       </div>
     </main>
