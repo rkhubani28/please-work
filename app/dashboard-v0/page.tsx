@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PLANS, TIERS } from "@/lib/pricing";
 import type { PlanType, TierType } from "@/lib/types";
+import { Skeleton, TextSkeleton } from "@/components/Skeleton";
 
 export default function DashboardV0() {
   const [step, setStep] = useState<"plan" | "tier" | "dashboard">("plan");
@@ -234,6 +235,16 @@ function LeagueCard({
         </button>
       </div>
 
+      {loading && recaps.length === 0 && (
+        <div className="mt-6 space-y-4 border-t border-white/10 pt-6">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="rounded-lg bg-black/40 p-4">
+              <Skeleton className="h-5 w-1/2 mb-2" />
+              <TextSkeleton lines={2} />
+            </div>
+          ))}
+        </div>
+      )}
       {recaps.length > 0 && (
         <div className="mt-6 space-y-4 border-t border-white/10 pt-6">
           {recaps.map((recap) => (

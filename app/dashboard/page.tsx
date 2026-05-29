@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { GridironLogo } from "@/components/SportLogo";
+import { Skeleton, TextSkeleton } from "@/components/Skeleton";
 
 type Section = "dashboard" | "recaps" | "rankings" | "trade" | "settings";
 
@@ -96,7 +97,20 @@ function Gated({
   children: React.ReactNode;
 }) {
   if (connected === null) {
-    return <div className="text-zinc-500">Loading…</div>;
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-10 w-64" />
+        <Skeleton className="h-5 w-96 max-w-full" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="rounded-2xl border border-white/10 bg-[#11161d] p-6">
+              <Skeleton className="h-6 w-1/2 mb-4" />
+              <TextSkeleton lines={3} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
   if (!connected) {
     return (
@@ -269,7 +283,12 @@ function RecapCard({ recap }: { recap: typeof RECAP_DATA[0] }) {
           {loading ? "Generating…" : "AI Recap"}
         </button>
       </div>
-      {summary && (
+      {loading && (
+        <div className="mt-2 border-t border-white/5 pt-4">
+          <TextSkeleton lines={3} />
+        </div>
+      )}
+      {!loading && summary && (
         <div className="mt-2 border-t border-white/5 pt-4">
           <p className="text-sm leading-relaxed text-zinc-300">{summary}</p>
           <p className="mt-3 text-xs text-zinc-600">AI-generated · verify before acting · <a href="/accuracy" className="underline hover:text-zinc-400">accuracy tracking</a></p>
@@ -353,7 +372,13 @@ function SectionRankings() {
         {loading ? "Analyzing…" : "AI Rankings Analysis"}
       </button>
 
-      {analysis && (
+      {loading && (
+        <div className="mt-6 rounded-2xl border border-white/10 bg-[#11161d] p-6">
+          <div className="text-xs uppercase tracking-widest text-cyan-300 mb-3">AI Analysis</div>
+          <TextSkeleton lines={4} />
+        </div>
+      )}
+      {!loading && analysis && (
         <div className="mt-6 rounded-2xl border border-white/10 bg-[#11161d] p-6">
           <div className="text-xs uppercase tracking-widest text-cyan-300 mb-3">AI Analysis</div>
           <p className="text-zinc-300 leading-relaxed">{analysis}</p>
@@ -443,7 +468,13 @@ function SectionTrade() {
         {loading ? "Analyzing…" : "Analyze Trade"}
       </button>
 
-      {analysis && (
+      {loading && (
+        <div className="mt-6 rounded-2xl border border-white/10 bg-[#11161d] p-6 space-y-4">
+          <Skeleton className="h-7 w-24 rounded-full" />
+          <TextSkeleton lines={5} />
+        </div>
+      )}
+      {!loading && analysis && (
         <div className="mt-6 rounded-2xl border border-white/10 bg-[#11161d] p-6 space-y-4">
           {verdict && (
             <div className={`inline-flex rounded-full border px-4 py-1 text-sm font-bold ${verdictColor}`}>

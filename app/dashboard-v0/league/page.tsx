@@ -6,10 +6,35 @@ import { createClient } from "@/lib/supabase/client";
 import { useSearchParams } from "next/navigation";
 import { PLANS, TIERS, getPlanContent, getPlanAnalytics } from "@/lib/pricing";
 import type { PlanType, TierType } from "@/lib/types";
+import { Skeleton, TextSkeleton } from "@/components/Skeleton";
+
+function LeaguePageSkeleton() {
+  return (
+    <div className="min-h-screen bg-obsidian-900 text-on-surface p-8">
+      <div className="max-w-5xl mx-auto">
+        <Skeleton className="h-10 w-72 mb-3" />
+        <Skeleton className="h-5 w-48 mb-8" />
+        <div className="flex gap-3 mb-8">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-10 w-28 rounded-xl" />
+          ))}
+        </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="rounded-2xl border border-white/10 bg-white/5 p-8">
+              <Skeleton className="h-6 w-1/2 mb-4" />
+              <TextSkeleton lines={3} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function LeaguePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-obsidian-900 text-on-surface p-8">Loading...</div>}>
+    <Suspense fallback={<LeaguePageSkeleton />}>
       <LeaguePageContent />
     </Suspense>
   );
@@ -36,7 +61,7 @@ function LeaguePageContent() {
   }, [leagueId]);
 
   if (!league) {
-    return <div className="min-h-screen bg-obsidian-900 text-on-surface p-8">Loading...</div>;
+    return <LeaguePageSkeleton />;
   }
 
   const planContent = getPlanContent(planParam);
@@ -177,6 +202,14 @@ function RecapsTab({ leagueId, week }: any) {
       </button>
 
       <div className="grid gap-6">
+        {loading && recaps.length === 0 &&
+          Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="rounded-2xl border border-white/10 bg-white/5 p-8 glass-blur">
+              <Skeleton className="h-7 w-2/3 mb-3" />
+              <TextSkeleton lines={3} className="mb-4" />
+              <Skeleton className="h-10 w-24" />
+            </div>
+          ))}
         {recaps.map((recap) => (
           <div key={recap.matchupId} className="rounded-2xl border border-white/10 bg-white/5 p-8 glass-blur">
             <h3 className="text-2xl font-bold mb-2">{recap.title}</h3>
