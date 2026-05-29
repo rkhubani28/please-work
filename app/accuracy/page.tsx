@@ -51,7 +51,7 @@ export default function AccuracyPage() {
         <div className="mb-12 rounded-2xl border border-white/10 bg-surface-1/40 p-8 glass-blur">
           <h2 className="text-xl font-bold mb-3">Why we publish this.</h2>
           <p className="text-on-surface-variant text-sm leading-relaxed mb-4">
-            FantasyPros has a decade of tracked accuracy and 500,000+ customers. We don't — yet.
+            Established fantasy platforms have years of tracked accuracy data and hundreds of thousands of customers. We don't — yet.
             A cheap, transparent challenger earns patience that a pricey one wouldn't. We're new,
             here's how we're doing, and you can watch us improve.
           </p>

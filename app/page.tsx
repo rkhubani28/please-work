@@ -33,7 +33,7 @@ export default function HomePage() {
               projections. And the AI media layer that covers your league all season long.
             </p>
             <p className="mb-10 text-base text-zinc-500">
-              Both headline products. Neither hidden behind the other. Cheaper than FantasyPros.
+              Both headline products. Neither hidden behind the other. Priced for real managers.
             </p>
 
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
