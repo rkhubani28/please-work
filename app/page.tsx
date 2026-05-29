@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { GridironLogo, DugoutLogo, HoopsLogo, RinkLogo } from "@/components/SportLogo";
 
 export default function HomePage() {
   return (
@@ -54,6 +55,36 @@ export default function HomePage() {
             <p className="mt-5 text-xs text-zinc-600">
               Free tier: 1 league · metered tools + coverage · watermarked sharing
             </p>
+          </div>
+        </section>
+
+        {/* Sport engines strip */}
+        <section className="px-5 pb-16">
+          <div className="max-w-3xl mx-auto">
+            <p className="label-caps text-zinc-600 text-center mb-8">Starting with football. More coming.</p>
+            <div className="grid grid-cols-4 gap-6">
+              {[
+                { Logo: GridironLogo, name: "Gridiron", sub: "NFL · Live", active: true },
+                { Logo: DugoutLogo, name: "Dugout", sub: "MLB · Coming", active: false },
+                { Logo: HoopsLogo, name: "Hoops", sub: "NBA · Coming", active: false },
+                { Logo: RinkLogo, name: "Rink", sub: "NHL · Coming", active: false },
+              ].map(({ Logo, name, sub, active }) => (
+                <div
+                  key={name}
+                  className={`flex flex-col items-center gap-3 rounded-2xl border p-6 transition ${
+                    active
+                      ? "border-football-cyan/30 bg-football-cyan/5"
+                      : "border-white/5 bg-white/[0.02] opacity-40"
+                  }`}
+                >
+                  <Logo size={80} />
+                  <div className="text-center">
+                    <div className="font-bold text-sm">{name}</div>
+                    <div className="text-xs text-zinc-500">{sub}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

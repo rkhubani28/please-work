@@ -32,7 +32,7 @@ export default function DashboardPage() {
       <div className="flex">
         <aside className="min-h-screen w-72 border-r border-white/10 bg-black/30 p-6 flex flex-col">
           <div className="mb-12 flex items-center gap-3">
-            <GridironLogo size={44} />
+            <GridironLogo size={64} />
             <div>
               <div className="text-2xl font-black">SportsHQ</div>
               <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">Gridiron</div>

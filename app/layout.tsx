@@ -23,6 +23,10 @@ const mono = JetBrains_Mono({
 export const metadata = {
   title: "SportsHQ — Fantasy Sports AI Platform",
   description: "AI-generated fantasy sports insights across football, hockey, basketball, and baseball.",
+  icons: {
+    icon: "/logos/sportshq-logo.png",
+    apple: "/logos/sportshq-logo.png",
+  },
 };
 
 export default function RootLayout({
