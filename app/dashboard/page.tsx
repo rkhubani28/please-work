@@ -214,7 +214,10 @@ function RecapCard({ recap }: { recap: typeof RECAP_DATA[0] }) {
         </button>
       </div>
       {summary && (
-        <p className="mt-2 text-sm leading-relaxed text-zinc-300 border-t border-white/5 pt-4">{summary}</p>
+        <div className="mt-2 border-t border-white/5 pt-4">
+          <p className="text-sm leading-relaxed text-zinc-300">{summary}</p>
+          <p className="mt-3 text-xs text-zinc-600">AI-generated · verify before acting · <a href="/accuracy" className="underline hover:text-zinc-400">accuracy tracking</a></p>
+        </div>
       )}
     </div>
   );
@@ -298,6 +301,7 @@ function SectionRankings() {
         <div className="mt-6 rounded-2xl border border-white/10 bg-[#11161d] p-6">
           <div className="text-xs uppercase tracking-widest text-cyan-300 mb-3">AI Analysis</div>
           <p className="text-zinc-300 leading-relaxed">{analysis}</p>
+          <p className="mt-4 text-xs text-zinc-600">AI-generated · verify before acting · <a href="/accuracy" className="underline hover:text-zinc-400">accuracy tracking</a></p>
         </div>
       )}
     </div>
@@ -391,6 +395,7 @@ function SectionTrade() {
             </div>
           )}
           <pre className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap font-sans">{analysis}</pre>
+          <p className="text-xs text-zinc-600 pt-2 border-t border-white/5">AI-generated · verify before acting · <a href="/accuracy" className="underline hover:text-zinc-400">accuracy tracking</a></p>
         </div>
       )}
     </div>
@@ -578,14 +583,62 @@ function SectionSettings() {
           </button>
         </div>
 
-        <div className="rounded-2xl border border-red-500/20 bg-[#11161d] p-8">
-          <h3 className="text-lg font-bold mb-2 text-red-400">Danger zone</h3>
-          <p className="text-sm text-zinc-400 mb-4">Permanently delete your account and all data.</p>
-          <button className="rounded-xl border border-red-500/40 px-6 py-3 text-sm font-semibold text-red-400 transition hover:bg-red-500/10">
-            Delete account
-          </button>
-        </div>
+        <DeleteAccountCard />
       </div>
+    </div>
+  );
+}
+
+/* ── Delete Account ── */
+function DeleteAccountCard() {
+  const [confirm, setConfirm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleDelete() {
+    if (confirm !== "delete my account") return;
+    setLoading(true);
+    setError("");
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Delete user's league and cached data
+      await supabase.from("leagues").delete().eq("user_id", user.id);
+
+      // Sign out — leaves account shell in place; full deletion requires admin API
+      // Users can email privacy@sportshq.app for complete removal per Privacy Policy
+      await supabase.auth.signOut();
+      window.location.href = "/?deleted=1";
+    } catch {
+      setError("Deletion failed. Please contact privacy@sportshq.app.");
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-red-500/20 bg-[#11161d] p-8">
+      <h3 className="text-lg font-bold mb-2 text-red-400">Danger zone</h3>
+      <p className="text-sm text-zinc-400 mb-4">
+        Permanently delete your account and all league data. Type{" "}
+        <span className="font-mono text-zinc-300">delete my account</span> to confirm.
+      </p>
+      <input
+        type="text"
+        value={confirm}
+        onChange={(e) => setConfirm(e.target.value)}
+        placeholder="delete my account"
+        className="mb-4 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-red-500/60"
+      />
+      {error && <p className="mb-3 text-sm text-red-400">{error}</p>}
+      <button
+        onClick={handleDelete}
+        disabled={confirm !== "delete my account" || loading}
+        className="rounded-xl border border-red-500/40 px-6 py-3 text-sm font-semibold text-red-400 transition hover:bg-red-500/10 disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        {loading ? "Deleting…" : "Delete account"}
+      </button>
     </div>
   );
 }

@@ -181,12 +181,13 @@ function RecapsTab({ leagueId, week }: any) {
           <div key={recap.matchupId} className="rounded-2xl border border-white/10 bg-white/5 p-8 glass-blur">
             <h3 className="text-2xl font-bold mb-2">{recap.title}</h3>
             <p className="text-on-surface-variant mb-4">{recap.body}</p>
-            <div className="flex gap-6 text-sm">
+            <div className="flex gap-6 text-sm mb-4">
               <div>
                 <span className="text-on-surface-variant">MVP</span>
                 <p className="font-bold">{recap.mvp}</p>
               </div>
             </div>
+            <p className="text-xs text-zinc-600 border-t border-white/5 pt-3">AI-generated · verify before acting · <a href="/accuracy" className="underline hover:text-zinc-400">accuracy tracking</a></p>
           </div>
         ))}
       </div>
@@ -205,6 +206,8 @@ function ToolsTab({ leagueId, week, available }: any) {
   ];
 
   return (
+    <div>
+      <p className="mb-6 text-xs text-zinc-600">All recommendations are AI-generated. Verify before acting. <a href="/accuracy" className="underline hover:text-zinc-400">Accuracy tracking →</a></p>
     <div className="grid md:grid-cols-2 gap-6">
       {tools.map((tool) => {
         const isAvailable = available.includes(tool.id);
@@ -231,6 +234,7 @@ function ToolsTab({ leagueId, week, available }: any) {
           </div>
         );
       })}
+    </div>
     </div>
   );
 }
