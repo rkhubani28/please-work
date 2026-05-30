@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -10,7 +10,7 @@ export default function SignupPage() {
   const router = useRouter();
 
   // Redirect to onboarding quiz on mount
-  React.useEffect(() => {
+  useEffect(() => {
     router.push("/onboarding/quiz?signup=true");
   }, [router]);
 
