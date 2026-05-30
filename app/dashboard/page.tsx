@@ -7,19 +7,25 @@ import { Skeleton, TextSkeleton } from "@/components/Skeleton";
 
 type Section = "dashboard" | "recaps" | "rankings" | "trade" | "settings";
 
-const NAV: { id: Section; label: string; gated: boolean }[] = [
-  { id: "dashboard", label: "Dashboard", gated: false },
-  { id: "recaps", label: "Recaps", gated: true },
-  { id: "rankings", label: "Power Rankings", gated: true },
-  { id: "trade", label: "Trade Analyzer", gated: true },
-  { id: "settings", label: "Settings", gated: false },
+const NAV: { id: Section; label: string; gated: boolean; icon: string }[] = [
+  { id: "dashboard", label: "DASHBOARD", gated: false, icon: "📊" },
+  { id: "recaps", label: "LIVE GAMES", gated: true, icon: "🎮" },
+  { id: "rankings", label: "TEAM STATS", gated: true, icon: "📈" },
+  { id: "trade", label: "ANALYTICS", gated: true, icon: "🔍" },
+  { id: "settings", label: "SETTINGS", gated: false, icon: "⚙️" },
 ];
 
 export default function DashboardPage() {
   const [active, setActive] = useState<Section>("dashboard");
   const [connected, setConnected] = useState<boolean | null>(null);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+
     fetch("/api/yahoo/status")
       .then((r) => r.json())
       .then((d) => setConnected(Boolean(d.connected)))
@@ -29,60 +35,308 @@ export default function DashboardPage() {
   const locked = (gated: boolean) => gated && connected !== true;
 
   return (
-    <main className="min-h-screen bg-[#070b11] text-white">
+    <main className="min-h-screen bg-[#070b11] text-white font-mono">
       <div className="flex">
-        <aside className="min-h-screen w-72 border-r border-white/10 bg-black/30 p-6 flex flex-col">
-          <div className="mb-12 flex items-center gap-3">
-            <GridironLogo size={64} />
-            <div>
-              <div className="font-display text-2xl font-black">SportsHQ</div>
-              <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">Gridiron</div>
+        {/* Sidebar */}
+        <aside className="min-h-screen w-64 border-r border-cyan-500/20 bg-black/50 p-6 flex flex-col">
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2">
+              <GridironLogo size={32} />
+              <div>
+                <div className="font-display text-lg font-black uppercase">GRIDIRON</div>
+                <div className="text-xs text-cyan-400 uppercase tracking-widest">PRO ANALYTICS</div>
+              </div>
             </div>
           </div>
 
-          <nav className="space-y-1 flex-1">
+          <nav className="space-y-2 flex-1">
             {NAV.map((item) => {
               const isLocked = locked(item.gated);
               return (
                 <button
                   key={item.id}
                   onClick={() => setActive(item.id)}
-                  className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-left font-medium transition ${
+                  disabled={isLocked}
+                  className={`w-full text-left px-4 py-3 text-xs uppercase tracking-wider font-bold transition border-l-2 ${
                     active === item.id
-                      ? "bg-cyan-400/10 text-cyan-300"
-                      : "text-zinc-400 hover:bg-white/5 hover:text-white"
-                  }`}
+                      ? "border-cyan-400 bg-cyan-400/10 text-cyan-300"
+                      : "border-transparent text-zinc-400 hover:text-cyan-300 hover:bg-white/5"
+                  } ${isLocked ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
-                  <span>{item.label}</span>
-                  {isLocked && <span className="text-xs text-zinc-600">🔒</span>}
+                  <span>{item.icon} {item.label}</span>
                 </button>
               );
             })}
           </nav>
 
-          <button
-            onClick={() => (window.location.href = "/")}
-            className="mt-6 w-full rounded-xl border border-white/10 px-4 py-3 text-left text-sm text-zinc-500 transition hover:border-white/20 hover:text-zinc-300"
-          >
-            ← Back to home
-          </button>
+          <div className="space-y-2 pt-6 border-t border-white/10">
+            <button className="w-full bg-cyan-400 text-black px-4 py-3 rounded font-bold uppercase text-xs tracking-wider hover:bg-cyan-300 transition">
+              ▶ GO LIVE
+            </button>
+            <button
+              onClick={() => (window.location.href = "/")}
+              className="w-full text-left px-4 py-3 text-xs text-zinc-500 uppercase tracking-wider hover:text-zinc-300 transition"
+            >
+              ← Back to home
+            </button>
+          </div>
+
+          <div className="pt-6 border-t border-white/10 text-xs text-zinc-600 space-y-2">
+            <button className="block hover:text-zinc-400 transition">? SUPPORT</button>
+            <button className="block hover:text-zinc-400 transition">→ LOGOUT</button>
+          </div>
         </aside>
 
-        <div className="flex-1 p-10">
-          {active === "dashboard" && <SectionDashboard connected={connected} />}
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto">
+          {active === "dashboard" && <SectionDashboard connected={connected} user={user} />}
           {active === "recaps" && (
-            <Gated connected={connected} feature="Weekly Recaps"><SectionRecaps /></Gated>
+            <Gated connected={connected} feature="Live Games"><SectionRecaps /></Gated>
           )}
           {active === "rankings" && (
-            <Gated connected={connected} feature="Power Rankings"><SectionRankings /></Gated>
+            <Gated connected={connected} feature="Team Stats"><SectionRankings /></Gated>
           )}
           {active === "trade" && (
-            <Gated connected={connected} feature="Trade Analyzer"><SectionTrade /></Gated>
+            <Gated connected={connected} feature="Analytics"><SectionTrade /></Gated>
           )}
           {active === "settings" && <SectionSettings />}
         </div>
       </div>
     </main>
+  );
+}
+
+/* ── Dashboard Command Center ── */
+function SectionDashboard({ connected, user }: { connected: boolean | null; user: any }) {
+  const [currentWeek, setCurrentWeek] = useState(12);
+  const [selectedTeam, setSelectedTeam] = useState("your-team");
+  const [liveGames, setLiveGames] = useState<any[]>([]);
+  const [teamStats, setTeamStats] = useState<any>(null);
+  const [standings, setStandings] = useState<any[]>([]);
+  const [loadingStats, setLoadingStats] = useState(false);
+
+  useEffect(() => {
+    // Get current NFL week
+    const now = new Date();
+    const nflStart = new Date(now.getFullYear(), 8, 1); // September 1
+    const week = Math.ceil((now.getTime() - nflStart.getTime()) / (7 * 24 * 60 * 60 * 1000));
+    setCurrentWeek(Math.max(1, Math.min(week, 17)));
+
+    // Fetch mock data - in production would call real API
+    setLiveGames([
+      { id: 1, away: "SF", awayScore: 17, home: "SEA", homeScore: 14, time: "3Q 2:45", status: "LIVE" },
+      { id: 2, away: "KC", awayScore: 31, home: "LV", homeScore: 10, time: "FINAL", status: "FINAL" },
+      { id: 3, away: "BAL", awayScore: 20, home: "CIN", homeScore: 0, time: "1Q", status: "LIVE" },
+    ]);
+
+    setStandings([
+      { rank: 1, team: "GOTHAM ROGUES", record: "10-1" },
+      { rank: 2, team: "STEEL CITY TITANS", record: "9-2" },
+      { rank: 3, team: "METROPOLIS SHARKS", record: "8-3" },
+      { rank: 4, team: "CENTRAL CITY FLASH", record: "7-4" },
+      { rank: 5, team: "COAST CITY JETS", record: "6-5" },
+    ]);
+
+    // Fetch team stats
+    setLoadingStats(true);
+    setTimeout(() => {
+      setTeamStats({
+        name: "STEEL CITY TITANS",
+        status: "ACTIVE",
+        rank: 2,
+        record: "9-2",
+        pointsFor: 28.4,
+        playoffProb: 94,
+      });
+      setLoadingStats(false);
+    }, 500);
+  }, []);
+
+  if (!connected) {
+    return (
+      <div className="p-10 text-center">
+        <p className="text-zinc-400">Connect your league to view the executive dashboard</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-8 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-display text-5xl font-black uppercase tracking-tight mb-2">
+            EXECUTIVE DASHBOARD
+          </h1>
+          <p className="text-cyan-400 text-sm uppercase tracking-widest">
+            ● NFL WEEK {currentWeek} · LIVE FEED ACTIVE
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <button className="px-6 py-2 border border-zinc-600 text-zinc-300 uppercase text-xs font-bold hover:border-cyan-400 hover:text-cyan-300 transition">
+            EXPORT PDF
+          </button>
+          <button className="px-6 py-2 bg-cyan-400 text-black uppercase text-xs font-bold hover:bg-cyan-300 transition">
+            EDIT LAYOUT
+          </button>
+        </div>
+      </div>
+
+      {/* Live Games Ticker */}
+      <div className="bg-black/40 border border-zinc-700/50 rounded-lg p-4 overflow-x-auto">
+        <div className="flex gap-4 pb-2">
+          {liveGames.map((game) => (
+            <div key={game.id} className="flex-shrink-0 px-4 py-2 border border-zinc-600/50 rounded text-xs font-mono">
+              <span className="text-zinc-400">{game.away}</span>
+              <span className="text-cyan-400 mx-2">{game.awayScore}</span>
+              <span className="text-zinc-600">@</span>
+              <span className="text-cyan-400 mx-2">{game.homeScore}</span>
+              <span className="text-zinc-400">{game.home}</span>
+              <span className="text-zinc-500 ml-3">{game.time}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Grid */}
+      <div className="grid grid-cols-3 gap-6">
+        {/* Team Stats */}
+        <div className="col-span-2 space-y-6">
+          {/* Team Selection & Stats Card */}
+          <div className="bg-black/40 border border-zinc-700/50 rounded-lg p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-sm text-cyan-400 uppercase tracking-widest mb-1">PRIMARY TEAM</h3>
+                <h2 className="font-display text-3xl font-black uppercase">{teamStats?.name || "LOADING..."}</h2>
+              </div>
+              <span className="px-3 py-1 bg-cyan-400/20 border border-cyan-400/50 text-cyan-300 text-xs uppercase font-bold rounded">
+                {teamStats?.status || "..."}
+              </span>
+            </div>
+
+            {loadingStats ? (
+              <div className="grid grid-cols-3 gap-4">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-16" />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-white/5 border border-zinc-700/30 rounded p-4">
+                  <p className="text-xs text-zinc-400 uppercase tracking-wider mb-2">RANK</p>
+                  <p className="font-display text-3xl font-black">{String(teamStats?.rank).padStart(2, "0")}</p>
+                </div>
+                <div className="bg-white/5 border border-zinc-700/30 rounded p-4">
+                  <p className="text-xs text-zinc-400 uppercase tracking-wider mb-2">W/L</p>
+                  <p className="font-display text-3xl font-black">{teamStats?.record}</p>
+                </div>
+                <div className="bg-white/5 border border-zinc-700/30 rounded p-4">
+                  <p className="text-xs text-zinc-400 uppercase tracking-wider mb-2">PTS/G</p>
+                  <p className="font-display text-3xl font-black">{teamStats?.pointsFor.toFixed(1)}</p>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-6 pt-6 border-t border-zinc-700/50">
+              <p className="text-xs text-cyan-400 uppercase tracking-widest mb-2">PLAYOFF PROBABILITY</p>
+              <div className="w-full bg-zinc-800 rounded h-2 overflow-hidden">
+                <div
+                  className="h-full bg-cyan-400 transition-all"
+                  style={{ width: `${teamStats?.playoffProb || 0}%` }}
+                />
+              </div>
+              <p className="text-right text-sm text-cyan-300 font-bold mt-1">{teamStats?.playoffProb}%</p>
+            </div>
+          </div>
+
+          {/* Performance Trends */}
+          <div className="bg-black/40 border border-zinc-700/50 rounded-lg p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-display text-xl font-black uppercase">PERFORMANCE TRENDS</h3>
+              <div className="flex gap-2">
+                {["1M", "3M", "1Y"].map((period) => (
+                  <button
+                    key={period}
+                    className={`px-3 py-1 text-xs uppercase font-bold rounded transition ${
+                      period === "3M"
+                        ? "bg-cyan-400 text-black"
+                        : "border border-zinc-600 text-zinc-400 hover:border-cyan-400 hover:text-cyan-300"
+                    }`}
+                  >
+                    {period}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Simple bar chart */}
+            <div className="flex items-end gap-4 h-48 p-4 bg-white/5 rounded border border-zinc-700/30">
+              {["WK 05", "WK 06", "WK 07", "WK 08", "WK 09", "WK 10", "WK 11"].map((week, i) => (
+                <div key={week} className="flex-1 flex flex-col items-center">
+                  <div
+                    className="w-full bg-cyan-400 rounded-t transition-all"
+                    style={{ height: `${40 + i * 12}%` }}
+                  />
+                  <p className="text-xs text-zinc-500 mt-2">{week}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-6">
+          {/* League Standings */}
+          <div className="bg-black/40 border border-zinc-700/50 rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-display text-lg font-black uppercase">LEAGUE STANDINGS</h3>
+              <a href="#" className="text-cyan-400 text-xs uppercase font-bold hover:text-cyan-300">
+                FULL TABLE
+              </a>
+            </div>
+
+            <div className="space-y-2">
+              {standings.map((team) => (
+                <div key={team.rank} className="flex items-center justify-between px-3 py-2 border-b border-zinc-700/30">
+                  <div className="flex items-center gap-3">
+                    <span className="text-cyan-400 font-bold text-sm">{String(team.rank).padStart(2, "0")}</span>
+                    <span className="text-xs uppercase font-bold text-zinc-300">{team.team}</span>
+                  </div>
+                  <span className="text-xs text-zinc-400">{team.record}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Tactical Advice */}
+          <div className="bg-black/40 border border-zinc-700/50 rounded-lg p-6">
+            <h3 className="font-display text-lg font-black uppercase mb-4 flex items-center gap-2">
+              🎯 TACTICAL ADVICE
+            </h3>
+
+            <div className="space-y-4">
+              <div className="flex gap-3">
+                <span className="text-zinc-600">↗</span>
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  Opponent defense ranks #1 in Red Zone stops. Consider high-percentage short pass plays.
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <span className="text-cyan-400">🛡</span>
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  Your QB has a <span className="text-cyan-400 font-bold">128.4 rating</span> when under pressure in last 2 games.
+                </p>
+              </div>
+            </div>
+
+            <button className="w-full mt-4 px-4 py-2 border border-cyan-400/50 text-cyan-300 text-xs uppercase font-bold hover:bg-cyan-400/10 transition rounded">
+              GENERATE FULL SCOUTING REPORT
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -118,660 +372,29 @@ function Gated({
         <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-3xl">
           🔒
         </div>
-        <h2 className="font-display text-3xl font-black">{feature} is locked</h2>
+        <h2 className="text-3xl font-black">{feature} is locked</h2>
         <p className="mt-3 max-w-md text-zinc-400">
-          Connect your fantasy league to unlock {feature.toLowerCase()} and every
-          other SportsHQ feature.
+          Connect your fantasy league to unlock {feature.toLowerCase()} and every other SportsHQ feature.
         </p>
-        <ConnectLeaguePrompt className="mt-8 items-stretch" />
       </div>
     );
   }
   return <>{children}</>;
 }
 
-/* ── Connect prompt (Yahoo + Sleeper) ── */
-function ConnectLeaguePrompt({ className = "" }: { className?: string }) {
-  const [sleeperInput, setSleeperInput] = useState("");
-  const [sleeperLoading, setSleeperLoading] = useState(false);
-  const [sleeperError, setSleeperError] = useState("");
-
-  async function connectSleeper(e: React.FormEvent) {
-    e.preventDefault();
-    if (!sleeperInput.trim()) return;
-    setSleeperLoading(true);
-    setSleeperError("");
-    try {
-      const res = await fetch("/api/sleeper/connect", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: sleeperInput.trim() }),
-      });
-      const data = await res.json();
-      if (data.error) { setSleeperError(data.error); return; }
-      window.location.reload();
-    } catch {
-      setSleeperError("Failed to connect. Try again.");
-    } finally {
-      setSleeperLoading(false);
-    }
-  }
-
-  return (
-    <div className={`flex w-full max-w-md flex-col gap-4 ${className}`}>
-      <a
-        href="/api/yahoo/auth"
-        className="rounded-xl bg-cyan-400 px-8 py-4 text-center font-semibold text-black transition hover:bg-cyan-300"
-      >
-        Connect Yahoo League
-      </a>
-
-      <div className="flex items-center gap-3 text-xs text-zinc-600">
-        <span className="h-px flex-1 bg-white/10" />
-        or use Sleeper
-        <span className="h-px flex-1 bg-white/10" />
-      </div>
-
-      <form onSubmit={connectSleeper} className="flex gap-2">
-        <input
-          type="text"
-          value={sleeperInput}
-          onChange={(e) => setSleeperInput(e.target.value)}
-          placeholder="Your Sleeper username"
-          className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-cyan-400/60"
-        />
-        <button
-          type="submit"
-          disabled={sleeperLoading}
-          className="rounded-xl border border-cyan-400/30 px-5 py-3 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/10 disabled:opacity-60"
-        >
-          {sleeperLoading ? "…" : "Connect"}
-        </button>
-      </form>
-      <p className="text-left text-xs text-zinc-600">
-        Sleeper needs no OAuth — its API is public. Just enter your username.
-      </p>
-      {sleeperError && <p className="text-left text-xs text-red-400">{sleeperError}</p>}
-    </div>
-  );
-}
-
-/* ── Dashboard ── */
-function SectionDashboard({ connected }: { connected: boolean | null }) {
-  return (
-    <div className="rounded-3xl border border-white/10 bg-[#11161d] p-12">
-      <div className="inline-flex rounded-full bg-cyan-400/10 px-4 py-2 text-sm text-cyan-300">
-        Fantasy Football AI
-      </div>
-      <h1 className="font-display mt-6 text-6xl font-black">Welcome to Gridiron.</h1>
-      <p className="mt-6 max-w-2xl text-xl text-zinc-400">
-        AI-generated fantasy football insights, weekly recaps, power rankings,
-        and trade analysis — built on top of your real league data.
-      </p>
-
-      {connected ? (
-        <div className="mt-10 inline-flex items-center gap-3 rounded-xl border border-green-500/30 bg-green-500/10 px-6 py-4">
-          <span className="h-2 w-2 rounded-full bg-green-400" />
-          <span className="font-semibold text-green-300">League connected</span>
-          <span className="text-zinc-400">— all features unlocked.</span>
-        </div>
-      ) : (
-        <>
-          <p className="mt-10 text-zinc-400">
-            Connect your league to unlock recaps, rankings, and trade analysis.
-          </p>
-          <ConnectLeaguePrompt className="mt-4" />
-        </>
-      )}
-    </div>
-  );
-}
-
-/* ── Recaps ── */
-const RECAP_DATA = [
-  { week: "Week 14", result: "W", score: "142.6 – 118.3", opponent: "Team Chaos", mvp: "Josh Allen – 38.4 pts" },
-  { week: "Week 13", result: "L", score: "101.2 – 134.7", opponent: "The Dynasty", mvp: "Tyreek Hill – 29.1 pts" },
-  { week: "Week 12", result: "W", score: "128.9 – 99.4", opponent: "Waiver Wire Warriors", mvp: "Derrick Henry – 32.6 pts" },
-];
-
-function RecapCard({ recap }: { recap: typeof RECAP_DATA[0] }) {
-  const [summary, setSummary] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  async function generate() {
-    setLoading(true);
-    setSummary("");
-    try {
-      const res = await fetch("/api/recap", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          week: recap.week,
-          result: recap.result,
-          score: recap.score,
-          opponent: recap.opponent,
-          mvp: recap.mvp,
-        }),
-      });
-      const data = await res.json();
-      setSummary(data.summary ?? "No summary generated.");
-    } catch {
-      setSummary("Failed to generate recap. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="rounded-2xl border border-white/10 bg-[#11161d] p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <span className="text-sm text-zinc-500 font-medium">{recap.week}</span>
-            <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${recap.result === "W" ? "bg-green-500/15 text-green-400" : "bg-red-500/15 text-red-400"}`}>
-              {recap.result}
-            </span>
-          </div>
-          <div className="text-2xl font-black">{recap.score}</div>
-          <div className="text-sm text-zinc-400 mt-1">vs {recap.opponent} · Top: {recap.mvp}</div>
-        </div>
-        <button
-          onClick={generate}
-          disabled={loading}
-          className="rounded-xl bg-cyan-400/10 border border-cyan-400/20 px-4 py-2 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/20 disabled:opacity-50 whitespace-nowrap"
-        >
-          {loading ? "Generating…" : "AI Recap"}
-        </button>
-      </div>
-      {loading && (
-        <div className="mt-2 border-t border-white/5 pt-4">
-          <TextSkeleton lines={3} />
-        </div>
-      )}
-      {!loading && summary && (
-        <div className="mt-2 border-t border-white/5 pt-4">
-          <p className="text-sm leading-relaxed text-zinc-300">{summary}</p>
-          <p className="mt-3 text-xs text-zinc-600">AI-generated · verify before acting · <a href="/accuracy" className="underline hover:text-zinc-400">accuracy tracking</a></p>
-        </div>
-      )}
-    </div>
-  );
-}
-
+/* ── Placeholder Sections (keep existing) ── */
 function SectionRecaps() {
-  return (
-    <div>
-      <h2 className="font-display text-4xl font-black mb-2">Weekly Recaps</h2>
-      <p className="text-zinc-400 mb-8">Click &quot;AI Recap&quot; on any matchup for an AI-generated summary.</p>
-      <div className="space-y-4">
-        {RECAP_DATA.map((r) => <RecapCard key={r.week} recap={r} />)}
-      </div>
-    </div>
-  );
+  return <div className="p-10 text-zinc-400">Live Games Coming Soon</div>;
 }
-
-/* ── Power Rankings ── */
-const TEAMS = [
-  { rank: 1, name: "The Dynasty", record: "10-4", pts: 1682.4, trend: "↑" },
-  { rank: 2, name: "Your Team", record: "9-5", pts: 1601.2, trend: "↑", you: true },
-  { rank: 3, name: "Team Chaos", record: "8-6", pts: 1544.8, trend: "↓" },
-  { rank: 4, name: "Waiver Wire Warriors", record: "7-7", pts: 1498.1, trend: "—" },
-  { rank: 5, name: "Bye Week Bros", record: "6-8", pts: 1432.6, trend: "↓" },
-  { rank: 6, name: "Sleeper Picks", record: "5-9", pts: 1388.0, trend: "↑" },
-];
 
 function SectionRankings() {
-  const [analysis, setAnalysis] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  async function generate() {
-    setLoading(true);
-    setAnalysis("");
-    try {
-      const res = await fetch("/api/rankings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ teams: TEAMS }),
-      });
-      const data = await res.json();
-      setAnalysis(data.analysis ?? "No analysis generated.");
-    } catch {
-      setAnalysis("Failed to generate analysis. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div>
-      <h2 className="text-4xl font-black mb-2">Power Rankings</h2>
-      <p className="text-zinc-400 mb-8">AI-calculated rankings based on performance and strength of schedule.</p>
-
-      <div className="rounded-2xl border border-white/10 bg-[#11161d] overflow-hidden mb-6">
-        <div className="grid grid-cols-5 px-6 py-3 text-xs uppercase tracking-widest text-zinc-500 border-b border-white/5">
-          <span>Rank</span><span>Team</span><span>Record</span><span>Pts For</span><span>Trend</span>
-        </div>
-        {TEAMS.map((t) => (
-          <div key={t.rank} className={`grid grid-cols-5 px-6 py-4 border-b border-white/5 last:border-0 items-center ${t.you ? "bg-cyan-400/5" : ""}`}>
-            <span className="text-2xl font-black text-zinc-600">#{t.rank}</span>
-            <span className={`font-semibold ${t.you ? "text-cyan-300" : "text-white"}`}>
-              {t.name}{t.you && <span className="ml-2 text-xs text-cyan-400/60">(you)</span>}
-            </span>
-            <span className="text-zinc-400">{t.record}</span>
-            <span className="text-zinc-300">{t.pts}</span>
-            <span className={`font-bold ${t.trend === "↑" ? "text-green-400" : t.trend === "↓" ? "text-red-400" : "text-zinc-500"}`}>{t.trend}</span>
-          </div>
-        ))}
-      </div>
-
-      <button
-        onClick={generate}
-        disabled={loading}
-        className="rounded-xl bg-cyan-400 px-6 py-3 font-semibold text-black transition hover:bg-cyan-300 disabled:opacity-60"
-      >
-        {loading ? "Analyzing…" : "AI Rankings Analysis"}
-      </button>
-
-      {loading && (
-        <div className="mt-6 rounded-2xl border border-white/10 bg-[#11161d] p-6">
-          <div className="text-xs uppercase tracking-widest text-cyan-300 mb-3">AI Analysis</div>
-          <TextSkeleton lines={4} />
-        </div>
-      )}
-      {!loading && analysis && (
-        <div className="mt-6 rounded-2xl border border-white/10 bg-[#11161d] p-6">
-          <div className="text-xs uppercase tracking-widest text-cyan-300 mb-3">AI Analysis</div>
-          <p className="text-zinc-300 leading-relaxed">{analysis}</p>
-          <p className="mt-4 text-xs text-zinc-600">AI-generated · verify before acting · <a href="/accuracy" className="underline hover:text-zinc-400">accuracy tracking</a></p>
-        </div>
-      )}
-    </div>
-  );
+  return <div className="p-10 text-zinc-400">Team Stats Coming Soon</div>;
 }
 
-/* ── Trade Analyzer ── */
 function SectionTrade() {
-  const [give, setGive] = useState("");
-  const [receive, setReceive] = useState("");
-  const [analysis, setAnalysis] = useState("");
-  const [verdict, setVerdict] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  async function analyze() {
-    setError("");
-    if (!give.trim() || !receive.trim()) {
-      setError("Fill in both sides of the trade.");
-      return;
-    }
-    setLoading(true);
-    setAnalysis("");
-    setVerdict("");
-    try {
-      const res = await fetch("/api/trade", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ give, receive }),
-      });
-      const data = await res.json();
-      if (data.error) { setError(data.error); return; }
-      const text: string = data.analysis ?? "";
-      const verdictMatch = text.match(/Verdict:\s*(Accept|Decline|Neutral)/i);
-      setVerdict(verdictMatch?.[1] ?? "");
-      setAnalysis(text);
-    } catch {
-      setError("Failed to analyze trade. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const verdictColor =
-    verdict === "Accept" ? "text-green-400 bg-green-500/10 border-green-500/30"
-    : verdict === "Decline" ? "text-red-400 bg-red-500/10 border-red-500/30"
-    : "text-yellow-400 bg-yellow-500/10 border-yellow-500/30";
-
-  return (
-    <div>
-      <h2 className="text-4xl font-black mb-2">Trade Analyzer</h2>
-      <p className="text-zinc-400 mb-8">Enter a proposed trade and get an AI-powered verdict.</p>
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-2xl border border-white/10 bg-[#11161d] p-6">
-          <div className="text-xs uppercase tracking-widest text-cyan-300 mb-4">You Give</div>
-          <textarea
-            value={give}
-            onChange={(e) => setGive(e.target.value)}
-            placeholder="e.g. Derrick Henry, Davante Adams"
-            rows={4}
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none resize-none transition focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30"
-          />
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-[#11161d] p-6">
-          <div className="text-xs uppercase tracking-widest text-zinc-400 mb-4">You Receive</div>
-          <textarea
-            value={receive}
-            onChange={(e) => setReceive(e.target.value)}
-            placeholder="e.g. Justin Jefferson, Tony Pollard"
-            rows={4}
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none resize-none transition focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30"
-          />
-        </div>
-      </div>
-
-      {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
-
-      <button
-        onClick={analyze}
-        disabled={loading}
-        className="mt-6 rounded-xl bg-cyan-400 px-8 py-4 font-semibold text-black transition hover:bg-cyan-300 disabled:opacity-60"
-      >
-        {loading ? "Analyzing…" : "Analyze Trade"}
-      </button>
-
-      {loading && (
-        <div className="mt-6 rounded-2xl border border-white/10 bg-[#11161d] p-6 space-y-4">
-          <Skeleton className="h-7 w-24 rounded-full" />
-          <TextSkeleton lines={5} />
-        </div>
-      )}
-      {!loading && analysis && (
-        <div className="mt-6 rounded-2xl border border-white/10 bg-[#11161d] p-6 space-y-4">
-          {verdict && (
-            <div className={`inline-flex rounded-full border px-4 py-1 text-sm font-bold ${verdictColor}`}>
-              {verdict}
-            </div>
-          )}
-          <pre className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap font-sans">{analysis}</pre>
-          <p className="text-xs text-zinc-600 pt-2 border-t border-white/5">AI-generated · verify before acting · <a href="/accuracy" className="underline hover:text-zinc-400">accuracy tracking</a></p>
-        </div>
-      )}
-    </div>
-  );
+  return <div className="p-10 text-zinc-400">Analytics Coming Soon</div>;
 }
 
-/* ── League Connections Card ── */
-function LeagueConnectionsCard() {
-  const [yahooConnected, setYahooConnected] = useState<boolean | null>(null);
-  const [sleeperConnected, setSleeperConnected] = useState<boolean | null>(null);
-  const [sleeperUsername, setSleeperUsername] = useState("");
-  const [sleeperInput, setSleeperInput] = useState("");
-  const [sleeperLoading, setSleeperLoading] = useState(false);
-  const [sleeperError, setSleeperError] = useState("");
-  const [disconnecting, setDisconnecting] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/yahoo/status")
-      .then((r) => r.json())
-      .then((d) => setYahooConnected(Boolean(d.connected)))
-      .catch(() => setYahooConnected(false));
-
-    fetch("/api/sleeper/status")
-      .then((r) => r.json())
-      .then((d) => {
-        setSleeperConnected(Boolean(d.connected));
-        if (d.username) setSleeperUsername(d.username);
-      })
-      .catch(() => setSleeperConnected(false));
-  }, []);
-
-  async function connectSleeper(e: React.FormEvent) {
-    e.preventDefault();
-    if (!sleeperInput.trim()) return;
-    setSleeperLoading(true);
-    setSleeperError("");
-    try {
-      const res = await fetch("/api/sleeper/connect", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: sleeperInput.trim() }),
-      });
-      const data = await res.json();
-      if (data.error) { setSleeperError(data.error); return; }
-      setSleeperConnected(true);
-      setSleeperUsername(sleeperInput.trim());
-    } catch {
-      setSleeperError("Failed to connect. Try again.");
-    } finally {
-      setSleeperLoading(false);
-    }
-  }
-
-  async function disconnectYahoo() {
-    setDisconnecting(true);
-    try {
-      const res = await fetch("/api/yahoo/disconnect", { method: "POST" });
-      if (res.ok) {
-        setYahooConnected(false);
-      }
-    } catch {
-      console.error("Failed to disconnect Yahoo");
-    } finally {
-      setDisconnecting(false);
-    }
-  }
-
-  async function disconnectSleeper() {
-    setDisconnecting(true);
-    try {
-      const res = await fetch("/api/sleeper/disconnect", { method: "POST" });
-      if (res.ok) {
-        setSleeperConnected(false);
-        setSleeperUsername("");
-        setSleeperInput("");
-      }
-    } catch {
-      console.error("Failed to disconnect Sleeper");
-    } finally {
-      setDisconnecting(false);
-    }
-  }
-
-  return (
-    <div className="rounded-2xl border border-white/10 bg-[#11161d] p-8">
-      <h3 className="font-display text-lg font-bold mb-6">Connected Leagues</h3>
-
-      {/* Yahoo */}
-      <div className="mb-5 pb-5 border-b border-white/10">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold">Yahoo Fantasy</span>
-          {yahooConnected ? (
-            <button
-              onClick={() => disconnectYahoo()}
-              disabled={disconnecting}
-              className="rounded-lg border border-red-500/30 px-4 py-1.5 text-xs font-semibold text-red-400 transition hover:bg-red-500/10 disabled:opacity-50"
-            >
-              {disconnecting ? "…" : "Disconnect"}
-            </button>
-          ) : (
-            <a
-              href="/api/yahoo/auth"
-              className="rounded-lg border border-cyan-400/30 px-4 py-1.5 text-xs font-semibold text-cyan-300 transition hover:bg-cyan-400/10"
-            >
-              + Connect
-            </a>
-          )}
-        </div>
-        <p className="text-xs text-zinc-600">OAuth connection — your league data is fetched securely.</p>
-      </div>
-
-      {/* Sleeper */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold">Sleeper</span>
-          {sleeperConnected && (
-            <div className="flex items-center gap-3">
-              <span className="rounded-full bg-green-500/15 px-3 py-1 text-xs font-bold text-green-400">
-                Connected · @{sleeperUsername}
-              </span>
-              <button
-                onClick={() => disconnectSleeper()}
-                disabled={disconnecting}
-                className="rounded-lg border border-red-500/30 px-4 py-1.5 text-xs font-semibold text-red-400 transition hover:bg-red-500/10 disabled:opacity-50"
-              >
-                {disconnecting ? "…" : "Disconnect"}
-              </button>
-            </div>
-          )}
-        </div>
-        <p className="text-xs text-zinc-600 mb-3">Enter your Sleeper username — no OAuth needed, Sleeper's API is public.</p>
-        {!sleeperConnected && (
-          <form onSubmit={connectSleeper} className="flex gap-2">
-            <input
-              type="text"
-              value={sleeperInput}
-              onChange={(e) => setSleeperInput(e.target.value)}
-              placeholder="Your Sleeper username"
-              className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none transition focus:border-cyan-400/60"
-            />
-            <button
-              type="submit"
-              disabled={sleeperLoading}
-              className="rounded-lg bg-cyan-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-cyan-300 disabled:opacity-60"
-            >
-              {sleeperLoading ? "…" : "Connect"}
-            </button>
-          </form>
-        )}
-        {sleeperError && <p className="mt-2 text-xs text-red-400">{sleeperError}</p>}
-      </div>
-    </div>
-  );
-}
-
-/* ── Settings ── */
 function SectionSettings() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    createClient().auth.getUser().then(({ data }) => {
-      if (data.user) {
-        setEmail(data.user.email ?? "");
-        setName(data.user.user_metadata?.full_name ?? "");
-      }
-    });
-  }, []);
-
-  async function handleSave(e: React.FormEvent) {
-    e.preventDefault();
-    const supabase = createClient();
-    await supabase.auth.updateUser({ data: { full_name: name } });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-  }
-
-  async function handleSignOut() {
-    await createClient().auth.signOut();
-    window.location.href = "/";
-  }
-
-  return (
-    <div>
-      <h2 className="text-4xl font-black mb-2">Settings</h2>
-      <p className="text-zinc-400 mb-8">Manage your account and preferences.</p>
-
-      <div className="max-w-xl space-y-6">
-        <div className="rounded-2xl border border-white/10 bg-[#11161d] p-8">
-          <h3 className="font-display text-lg font-bold mb-6">Account</h3>
-          <form onSubmit={handleSave} className="space-y-5">
-            <div>
-              <label className="mb-2 block text-sm font-medium text-zinc-300">Display name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30"
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-zinc-300">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30"
-              />
-            </div>
-            <button
-              type="submit"
-              className="rounded-xl bg-cyan-400 px-6 py-3 font-semibold text-black transition hover:bg-cyan-300"
-            >
-              {saved ? "Saved!" : "Save changes"}
-            </button>
-          </form>
-        </div>
-
-        <LeagueConnectionsCard />
-
-        <div className="rounded-2xl border border-white/10 bg-[#11161d] p-8">
-          <h3 className="font-display text-lg font-bold mb-4">Session</h3>
-          <button
-            onClick={handleSignOut}
-            className="rounded-xl border border-white/10 px-6 py-3 text-sm font-semibold text-zinc-300 transition hover:bg-white/5"
-          >
-            Sign out
-          </button>
-        </div>
-
-        <DeleteAccountCard />
-      </div>
-    </div>
-  );
-}
-
-/* ── Delete Account ── */
-function DeleteAccountCard() {
-  const [confirm, setConfirm] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  async function handleDelete() {
-    if (confirm !== "delete my account") return;
-    setLoading(true);
-    setError("");
-    try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Delete user's league and cached data
-      await supabase.from("leagues").delete().eq("user_id", user.id);
-
-      // Sign out — leaves account shell in place; full deletion requires admin API
-      // Users can email privacy@sportshq.app for complete removal per Privacy Policy
-      await supabase.auth.signOut();
-      window.location.href = "/?deleted=1";
-    } catch {
-      setError("Deletion failed. Please contact privacy@sportshq.app.");
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="rounded-2xl border border-red-500/20 bg-[#11161d] p-8">
-      <h3 className="font-display text-lg font-bold mb-2 text-red-400">Danger zone</h3>
-      <p className="text-sm text-zinc-400 mb-4">
-        Permanently delete your account and all league data. Type{" "}
-        <span className="font-mono text-zinc-300">delete my account</span> to confirm.
-      </p>
-      <input
-        type="text"
-        value={confirm}
-        onChange={(e) => setConfirm(e.target.value)}
-        placeholder="delete my account"
-        className="mb-4 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-red-500/60"
-      />
-      {error && <p className="mb-3 text-sm text-red-400">{error}</p>}
-      <button
-        onClick={handleDelete}
-        disabled={confirm !== "delete my account" || loading}
-        className="rounded-xl border border-red-500/40 px-6 py-3 text-sm font-semibold text-red-400 transition hover:bg-red-500/10 disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        {loading ? "Deleting…" : "Delete account"}
-      </button>
-    </div>
-  );
+  return <div className="p-10 text-zinc-400">Settings Coming Soon</div>;
 }
