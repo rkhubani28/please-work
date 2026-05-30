@@ -10,7 +10,7 @@ body {
   margin: 0;
   background: #050607;
   color: #e2e2e8;
-  font-family: var(--font-inter), Inter, Arial, sans-serif;
+  font-family: var(--font-courier), "Courier Prime", Courier, monospace;
   -webkit-font-smoothing: antialiased;
 }
 
