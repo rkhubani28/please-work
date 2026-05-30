@@ -2,8 +2,17 @@
 
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export default function SuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black" />}>
+      <SuccessContent />
+    </Suspense>
+  );
+}
+
+function SuccessContent() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "your email";
 
