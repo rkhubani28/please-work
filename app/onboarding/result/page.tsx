@@ -1,22 +1,21 @@
-import { Suspense } from "react";
+"use client";
+
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 import { PLANS, TIERS, getDescription } from "@/lib/pricing";
 import type { PlanType, TierType } from "@/lib/types";
 
 export default function ResultPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<div className="min-h-screen bg-obsidian-900" />}>
       <ResultContent />
     </Suspense>
   );
 }
 
 function ResultContent() {
-  "use client";
-
-  const searchParams = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : ""
-  );
+  const searchParams = useSearchParams();
   const tier = (searchParams.get("tier") as TierType) || "free";
   const plan = (searchParams.get("plan") as PlanType) || "double";
 
@@ -60,8 +59,6 @@ function ResultContent() {
 
           <button
             onClick={() => {
-              // For now, just unlock the plan
-              // Later this will redirect to checkout
               window.location.href = `/dashboard?plan=${plan}&tier=${tier}`;
             }}
             className="w-full rounded-xl bg-football-cyan px-6 py-4 font-bold text-obsidian-900 transition hover:bg-football-cyan/80 text-lg"
