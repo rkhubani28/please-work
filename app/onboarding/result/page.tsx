@@ -1,12 +1,22 @@
-"use client";
-
-import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import Link from "next/link";
 import { PLANS, TIERS, getDescription } from "@/lib/pricing";
 import type { PlanType, TierType } from "@/lib/types";
 
 export default function ResultPage() {
-  const searchParams = useSearchParams();
+  return (
+    <Suspense>
+      <ResultContent />
+    </Suspense>
+  );
+}
+
+function ResultContent() {
+  "use client";
+
+  const searchParams = new URLSearchParams(
+    typeof window !== "undefined" ? window.location.search : ""
+  );
   const tier = (searchParams.get("tier") as TierType) || "free";
   const plan = (searchParams.get("plan") as PlanType) || "double";
 
