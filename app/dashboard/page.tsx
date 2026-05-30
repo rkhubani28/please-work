@@ -7,12 +7,12 @@ import { Skeleton, TextSkeleton } from "@/components/Skeleton";
 
 type Section = "dashboard" | "recaps" | "rankings" | "trade" | "settings";
 
-const NAV: { id: Section; label: string; gated: boolean; icon: string }[] = [
-  { id: "dashboard", label: "DASHBOARD", gated: false, icon: "📊" },
-  { id: "recaps", label: "LIVE GAMES", gated: true, icon: "🎮" },
-  { id: "rankings", label: "TEAM STATS", gated: true, icon: "📈" },
-  { id: "trade", label: "ANALYTICS", gated: true, icon: "🔍" },
-  { id: "settings", label: "SETTINGS", gated: false, icon: "⚙️" },
+const NAV: { id: Section; label: string; gated: boolean }[] = [
+  { id: "dashboard", label: "DASHBOARD", gated: false },
+  { id: "recaps", label: "LIVE GAMES", gated: true },
+  { id: "rankings", label: "TEAM STATS", gated: true },
+  { id: "trade", label: "ANALYTICS", gated: true },
+  { id: "settings", label: "SETTINGS", gated: false },
 ];
 
 export default function DashboardPage() {
@@ -31,6 +31,16 @@ export default function DashboardPage() {
       .then((d) => setConnected(Boolean(d.connected)))
       .catch(() => setConnected(false));
   }, []);
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  };
+
+  const handleSupport = () => {
+    window.open("mailto:support@sportshq.app", "_blank");
+  };
 
   const locked = (gated: boolean) => gated && connected !== true;
 
@@ -63,7 +73,7 @@ export default function DashboardPage() {
                       : "border-transparent text-zinc-400 hover:text-cyan-300 hover:bg-white/5"
                   } ${isLocked ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
-                  <span>{item.icon} {item.label}</span>
+                  <span>{item.label}</span>
                 </button>
               );
             })}
@@ -71,19 +81,29 @@ export default function DashboardPage() {
 
           <div className="space-y-2 pt-6 border-t border-white/10">
             <button className="w-full bg-cyan-400 text-black px-4 py-3 rounded font-bold uppercase text-xs tracking-wider hover:bg-cyan-300 transition">
-              ▶ GO LIVE
+              GO LIVE
             </button>
             <button
               onClick={() => (window.location.href = "/")}
               className="w-full text-left px-4 py-3 text-xs text-zinc-500 uppercase tracking-wider hover:text-zinc-300 transition"
             >
-              ← Back to home
+              BACK TO HOME
             </button>
           </div>
 
-          <div className="pt-6 border-t border-white/10 text-xs text-zinc-600 space-y-2">
-            <button className="block hover:text-zinc-400 transition">? SUPPORT</button>
-            <button className="block hover:text-zinc-400 transition">→ LOGOUT</button>
+          <div className="pt-6 border-t border-white/10 text-xs space-y-2">
+            <button
+              onClick={handleSupport}
+              className="block w-full text-left px-4 py-2 text-zinc-600 uppercase tracking-wider hover:text-zinc-400 transition"
+            >
+              SUPPORT
+            </button>
+            <button
+              onClick={handleLogout}
+              className="block w-full text-left px-4 py-2 text-zinc-600 uppercase tracking-wider hover:text-zinc-400 transition"
+            >
+              LOGOUT
+            </button>
           </div>
         </aside>
 
