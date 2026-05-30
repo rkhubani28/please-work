@@ -39,7 +39,7 @@ export default function DashboardPage() {
   };
 
   const handleSupport = () => {
-    window.open("mailto:support@sportshq.app", "_blank");
+    window.open("mailto:sportshqfantasyassistant@gmail.com", "_blank");
   };
 
   const locked = (gated: boolean) => gated && connected !== true;
