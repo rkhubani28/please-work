@@ -41,7 +41,9 @@ const config: Config = {
         glass: "rgba(255,255,255,0.10)",
       },
       fontFamily: {
-        sans: ["var(--font-courier)", "Courier Prime", "monospace"],
+        sans: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "Inter", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       fontSize: {
         "display-hero": ["48px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "800" }],

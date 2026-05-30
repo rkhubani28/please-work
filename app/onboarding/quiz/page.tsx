@@ -155,20 +155,20 @@ export default function QuizPage() {
 function Question1({ onAnswer }: { onAnswer: (v: "free" | "premium") => void }) {
   return (
     <div className="text-center">
-      <h1 className="text-5xl font-bold mb-4">Are you looking for a premium version or just a free version?</h1>
+      <h1 className="font-display text-5xl font-bold mb-4">Are you looking for a premium version or just a free version?</h1>
       <div className="grid gap-4 md:grid-cols-2 mt-12">
         <button
           onClick={() => onAnswer("free")}
           className="rounded-2xl border border-white/10 bg-white/5 p-8 glass-blur transition hover:border-football-cyan/60 hover:shadow-[0_0_40px_rgba(0,240,255,0.2)]"
         >
-          <h2 className="text-2xl font-bold mb-2">Free</h2>
+          <h2 className="font-display text-2xl font-bold mb-2">Free</h2>
           <p className="text-on-surface-variant">Just a free version</p>
         </button>
         <button
           onClick={() => onAnswer("premium")}
           className="rounded-2xl border border-white/10 bg-white/5 p-8 glass-blur transition hover:border-football-cyan/60 hover:shadow-[0_0_40px_rgba(0,240,255,0.2)]"
         >
-          <h2 className="text-2xl font-bold mb-2">Premium</h2>
+          <h2 className="font-display text-2xl font-bold mb-2">Premium</h2>
           <p className="text-on-surface-variant">Looking for premium</p>
         </button>
       </div>
@@ -183,25 +183,25 @@ function Question2({
 }) {
   return (
     <div className="text-center">
-      <h1 className="text-5xl font-bold mb-4">Are you a commissioner, team owner, or both?</h1>
+      <h1 className="font-display text-5xl font-bold mb-4">Are you a commissioner, team owner, or both?</h1>
       <div className="grid gap-4 md:grid-cols-3 mt-12">
         <button
           onClick={() => onAnswer("commissioner")}
           className="rounded-2xl border border-white/10 bg-white/5 p-8 glass-blur transition hover:border-football-cyan/60 hover:shadow-[0_0_40px_rgba(0,240,255,0.2)]"
         >
-          <h2 className="text-2xl font-bold mb-2">Commissioner</h2>
+          <h2 className="font-display text-2xl font-bold mb-2">Commissioner</h2>
         </button>
         <button
           onClick={() => onAnswer("team-owner")}
           className="rounded-2xl border border-white/10 bg-white/5 p-8 glass-blur transition hover:border-football-cyan/60 hover:shadow-[0_0_40px_rgba(0,240,255,0.2)]"
         >
-          <h2 className="text-2xl font-bold mb-2">Team Owner</h2>
+          <h2 className="font-display text-2xl font-bold mb-2">Team Owner</h2>
         </button>
         <button
           onClick={() => onAnswer("both")}
           className="rounded-2xl border border-white/10 bg-white/5 p-8 glass-blur transition hover:border-football-cyan/60 hover:shadow-[0_0_40px_rgba(0,240,255,0.2)]"
         >
-          <h2 className="text-2xl font-bold mb-2">Both</h2>
+          <h2 className="font-display text-2xl font-bold mb-2">Both</h2>
         </button>
       </div>
     </div>
@@ -211,19 +211,19 @@ function Question2({
 function Question3({ onAnswer }: { onAnswer: (v: "league" | "teams") => void }) {
   return (
     <div className="text-center">
-      <h1 className="text-5xl font-bold mb-4">Would you like to use this for your entire league or just your team(s)?</h1>
+      <h1 className="font-display text-5xl font-bold mb-4">Would you like to use this for your entire league or just your team(s)?</h1>
       <div className="grid gap-4 md:grid-cols-2 mt-12">
         <button
           onClick={() => onAnswer("league")}
           className="rounded-2xl border border-white/10 bg-white/5 p-8 glass-blur transition hover:border-football-cyan/60 hover:shadow-[0_0_40px_rgba(0,240,255,0.2)]"
         >
-          <h2 className="text-2xl font-bold mb-2">Entire League</h2>
+          <h2 className="font-display text-2xl font-bold mb-2">Entire League</h2>
         </button>
         <button
           onClick={() => onAnswer("teams")}
           className="rounded-2xl border border-white/10 bg-white/5 p-8 glass-blur transition hover:border-football-cyan/60 hover:shadow-[0_0_40px_rgba(0,240,255,0.2)]"
         >
-          <h2 className="text-2xl font-bold mb-2">Just My Team(s)</h2>
+          <h2 className="font-display text-2xl font-bold mb-2">Just My Team(s)</h2>
         </button>
       </div>
     </div>
@@ -242,7 +242,7 @@ function QuestionFocus({
 
   return (
     <div className="text-center">
-      <h1 className="text-5xl font-bold mb-4">What would you like to focus on?</h1>
+      <h1 className="font-display text-5xl font-bold mb-4">What would you like to focus on?</h1>
       <p className="text-on-surface-variant text-lg mb-12">
         {tierName} is best for you.
       </p>
@@ -251,21 +251,21 @@ function QuestionFocus({
           onClick={() => onAnswer("content")}
           className="rounded-2xl border border-white/10 bg-white/5 p-8 glass-blur transition hover:border-football-cyan/60 hover:shadow-[0_0_40px_rgba(0,240,255,0.2)]"
         >
-          <h2 className="text-2xl font-bold mb-2">Content</h2>
+          <h2 className="font-display text-2xl font-bold mb-2">Content</h2>
           <p className="text-on-surface-variant text-sm">Coverage-focused</p>
         </button>
         <button
           onClick={() => onAnswer("balanced")}
           className="rounded-2xl border border-white/10 bg-white/5 p-8 glass-blur transition hover:border-football-cyan/60 hover:shadow-[0_0_40px_rgba(0,240,255,0.2)]"
         >
-          <h2 className="text-2xl font-bold mb-2">Both</h2>
+          <h2 className="font-display text-2xl font-bold mb-2">Both</h2>
           <p className="text-on-surface-variant text-sm">Balanced</p>
         </button>
         <button
           onClick={() => onAnswer("analytical")}
           className="rounded-2xl border border-white/10 bg-white/5 p-8 glass-blur transition hover:border-football-cyan/60 hover:shadow-[0_0_40px_rgba(0,240,255,0.2)]"
         >
-          <h2 className="text-2xl font-bold mb-2">Analytical</h2>
+          <h2 className="font-display text-2xl font-bold mb-2">Analytical</h2>
           <p className="text-on-surface-variant text-sm">Analytics-focused</p>
         </button>
       </div>

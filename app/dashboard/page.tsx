@@ -35,7 +35,7 @@ export default function DashboardPage() {
           <div className="mb-12 flex items-center gap-3">
             <GridironLogo size={64} />
             <div>
-              <div className="text-2xl font-black">SportsHQ</div>
+              <div className="font-display text-2xl font-black">SportsHQ</div>
               <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">Gridiron</div>
             </div>
           </div>
@@ -118,7 +118,7 @@ function Gated({
         <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-3xl">
           🔒
         </div>
-        <h2 className="text-3xl font-black">{feature} is locked</h2>
+        <h2 className="font-display text-3xl font-black">{feature} is locked</h2>
         <p className="mt-3 max-w-md text-zinc-400">
           Connect your fantasy league to unlock {feature.toLowerCase()} and every
           other SportsHQ feature.
@@ -203,7 +203,7 @@ function SectionDashboard({ connected }: { connected: boolean | null }) {
       <div className="inline-flex rounded-full bg-cyan-400/10 px-4 py-2 text-sm text-cyan-300">
         Fantasy Football AI
       </div>
-      <h1 className="mt-6 text-6xl font-black">Welcome to Gridiron.</h1>
+      <h1 className="font-display mt-6 text-6xl font-black">Welcome to Gridiron.</h1>
       <p className="mt-6 max-w-2xl text-xl text-zinc-400">
         AI-generated fantasy football insights, weekly recaps, power rankings,
         and trade analysis — built on top of your real league data.
@@ -301,7 +301,7 @@ function RecapCard({ recap }: { recap: typeof RECAP_DATA[0] }) {
 function SectionRecaps() {
   return (
     <div>
-      <h2 className="text-4xl font-black mb-2">Weekly Recaps</h2>
+      <h2 className="font-display text-4xl font-black mb-2">Weekly Recaps</h2>
       <p className="text-zinc-400 mb-8">Click &quot;AI Recap&quot; on any matchup for an AI-generated summary.</p>
       <div className="space-y-4">
         {RECAP_DATA.map((r) => <RecapCard key={r.week} recap={r} />)}
@@ -568,7 +568,7 @@ function LeagueConnectionsCard() {
 
   return (
     <div className="rounded-2xl border border-white/10 bg-[#11161d] p-8">
-      <h3 className="text-lg font-bold mb-6">Connected Leagues</h3>
+      <h3 className="font-display text-lg font-bold mb-6">Connected Leagues</h3>
 
       {/* Yahoo */}
       <div className="mb-5 pb-5 border-b border-white/10">
@@ -673,7 +673,7 @@ function SectionSettings() {
 
       <div className="max-w-xl space-y-6">
         <div className="rounded-2xl border border-white/10 bg-[#11161d] p-8">
-          <h3 className="text-lg font-bold mb-6">Account</h3>
+          <h3 className="font-display text-lg font-bold mb-6">Account</h3>
           <form onSubmit={handleSave} className="space-y-5">
             <div>
               <label className="mb-2 block text-sm font-medium text-zinc-300">Display name</label>
@@ -707,7 +707,7 @@ function SectionSettings() {
         <LeagueConnectionsCard />
 
         <div className="rounded-2xl border border-white/10 bg-[#11161d] p-8">
-          <h3 className="text-lg font-bold mb-4">Session</h3>
+          <h3 className="font-display text-lg font-bold mb-4">Session</h3>
           <button
             onClick={handleSignOut}
             className="rounded-xl border border-white/10 px-6 py-3 text-sm font-semibold text-zinc-300 transition hover:bg-white/5"
@@ -752,7 +752,7 @@ function DeleteAccountCard() {
 
   return (
     <div className="rounded-2xl border border-red-500/20 bg-[#11161d] p-8">
-      <h3 className="text-lg font-bold mb-2 text-red-400">Danger zone</h3>
+      <h3 className="font-display text-lg font-bold mb-2 text-red-400">Danger zone</h3>
       <p className="text-sm text-zinc-400 mb-4">
         Permanently delete your account and all league data. Type{" "}
         <span className="font-mono text-zinc-300">delete my account</span> to confirm.

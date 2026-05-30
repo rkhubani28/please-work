@@ -1,10 +1,22 @@
 import "./globals.css";
-import { Courier_Prime } from "next/font/google";
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 
-const courier = Courier_Prime({
-  weight: ["400", "700"],
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-courier",
+  variable: "--font-inter",
+  display: "swap",
+});
+
+// Space Grotesk stands in for Metropolis — geometric, high-impact display face
+const display = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -23,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={courier.variable}>
+    <html lang="en" className={`${inter.variable} ${display.variable} ${mono.variable}`}>
       <body>{children}</body>
     </html>
   );

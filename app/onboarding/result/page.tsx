@@ -40,8 +40,8 @@ function ResultContent() {
             <p className="text-on-surface-variant text-sm uppercase tracking-widest mb-2">
               We recommend
             </p>
-            <h1 className="text-5xl font-bold mb-2">{planData.name}</h1>
-            <p className="text-2xl font-bold text-football-cyan">{tierData.name}</p>
+            <h1 className="font-display text-5xl font-bold mb-2">{planData.name}</h1>
+            <p className="font-display text-2xl font-bold text-football-cyan">{tierData.name}</p>
           </div>
 
           <p className="text-on-surface-variant text-lg mb-8">{description}</p>

@@ -58,7 +58,7 @@ export default function ComparisonPage() {
           >
             ← Back to quiz
           </Link>
-          <h1 className="text-5xl font-bold mb-4">Compare All Plans</h1>
+          <h1 className="font-display text-5xl font-bold mb-4">Compare All Plans</h1>
           <p className="text-on-surface-variant text-lg">
             Choose the plan that best fits your needs
           </p>
@@ -179,7 +179,7 @@ function PlanHeader({
           Recommended
         </div>
       )}
-      {plan && <h3 className="font-bold text-lg">{planData?.name}</h3>}
+      {plan && <h3 className="font-display font-bold text-lg">{planData?.name}</h3>}
       <p className="text-sm font-bold text-football-cyan">{tierData.name}</p>
       <p className="text-xs text-on-surface-variant mt-1">{tierData.price}</p>
     </div>

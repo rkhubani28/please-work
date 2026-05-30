@@ -98,7 +98,7 @@ export default function HomePage() {
                 <div className="mb-4 inline-flex rounded-full bg-football-cyan/10 px-3 py-1 text-xs font-bold text-football-cyan label-caps">
                   The Tools
                 </div>
-                <h2 className="text-2xl font-bold mb-3">Make better decisions, every week.</h2>
+                <h2 className="font-display text-2xl font-bold mb-3">Make better decisions, every week.</h2>
                 <p className="text-on-surface-variant mb-6 text-sm leading-relaxed">
                   AI-powered lineup optimizer, waiver wire recommendations, trade analyzer, and
                   weekly projections — all explained in plain language about your roster.
@@ -121,7 +121,7 @@ export default function HomePage() {
                 <div className="mb-4 inline-flex rounded-full bg-football-cyan/10 px-3 py-1 text-xs font-bold text-football-cyan label-caps">
                   The Coverage
                 </div>
-                <h2 className="text-2xl font-bold mb-3">Your league deserves a beat reporter.</h2>
+                <h2 className="font-display text-2xl font-bold mb-3">Your league deserves a beat reporter.</h2>
                 <p className="text-on-surface-variant mb-6 text-sm leading-relaxed">
                   Weekly recaps, power ranking columns, season storylines, awards, and headlines —
                   AI-generated for your specific matchups and roster drama.
@@ -160,7 +160,7 @@ export default function HomePage() {
         <section className="px-5 pb-24">
           <div className="max-w-4xl mx-auto">
             <p className="label-caps text-zinc-600 text-center mb-4">Pricing</p>
-            <h2 className="text-3xl font-bold text-center mb-2">
+            <h2 className="font-display text-3xl font-bold text-center mb-2">
               Pick your emphasis. Pick your depth.
             </h2>
             <p className="text-center text-on-surface-variant mb-12 text-sm">
@@ -210,7 +210,7 @@ export default function HomePage() {
                       Most popular
                     </div>
                   )}
-                  <h3 className="text-xl font-bold mb-1">{tier.name}</h3>
+                  <h3 className="font-display text-xl font-bold mb-1">{tier.name}</h3>
                   <div className="mb-1">
                     <span className="text-3xl font-black text-football-cyan">{tier.price}</span>
                     <span className="text-sm text-zinc-500 ml-1">{tier.sub}</span>
@@ -243,7 +243,7 @@ export default function HomePage() {
         <section className="px-5 pb-24">
           <div className="max-w-3xl mx-auto text-center">
             <p className="label-caps text-zinc-600 mb-4">How leagues grow</p>
-            <h2 className="text-3xl font-bold mb-4">Tools acquire. Story spreads.</h2>
+            <h2 className="font-display text-3xl font-bold mb-4">Tools acquire. Story spreads.</h2>
             <p className="text-on-surface-variant mb-12 text-sm">
               The unit of growth is the league, not the individual.
             </p>
@@ -271,7 +271,7 @@ export default function HomePage() {
         {/* Final CTA */}
         <section className="px-5 pb-32 text-center">
           <div className="max-w-xl mx-auto">
-            <h2 className="text-4xl font-bold mb-4">Start free today.</h2>
+            <h2 className="font-display text-4xl font-bold mb-4">Start free today.</h2>
             <p className="text-on-surface-variant mb-8 text-base">
               Connect your Yahoo or Sleeper league in 60 seconds.
               No credit card required for the free tier.
