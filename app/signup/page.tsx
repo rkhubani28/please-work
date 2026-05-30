@@ -46,7 +46,23 @@ export default function SignupPage() {
       setLoading(false);
       return;
     }
-    // Supabase sends a confirmation email — show success state
+
+    // Send verification email via Resend
+    try {
+      await fetch('/api/auth/send-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          confirmationUrl: `${window.location.origin}/auth/callback`,
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to send verification email:', err);
+      // Don't block signup if email fails
+    }
+
+    // Show success state
     setSuccess(true);
     setLoading(false);
   }
