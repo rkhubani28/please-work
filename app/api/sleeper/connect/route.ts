@@ -35,6 +35,27 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    // Check for duplicate Sleeper account connections
+    // If any of these leagues already exist for a different user, reject
+    if (sleeperLeagues.length > 0) {
+      const { data: existingLeagues } = await supabase
+        .from("leagues")
+        .select("user_id, platform_league_id")
+        .eq("platform", "sleeper")
+        .in(
+          "platform_league_id",
+          sleeperLeagues.map((l: any) => l.league_id)
+        );
+
+      const conflictingLeague = existingLeagues?.find((l: any) => l.user_id !== user.id);
+      if (conflictingLeague) {
+        return NextResponse.json(
+          { error: "This Sleeper account is already connected to another SportsHQ account" },
+          { status: 409 }
+        );
+      }
+    }
+
     // Upsert each league into the leagues table
     const upserts = (sleeperLeagues || []).map((league: any) => ({
       user_id: user.id,

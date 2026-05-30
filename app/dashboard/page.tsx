@@ -497,6 +497,7 @@ function LeagueConnectionsCard() {
   const [sleeperInput, setSleeperInput] = useState("");
   const [sleeperLoading, setSleeperLoading] = useState(false);
   const [sleeperError, setSleeperError] = useState("");
+  const [disconnecting, setDisconnecting] = useState(false);
 
   useEffect(() => {
     fetch("/api/yahoo/status")
@@ -535,6 +536,36 @@ function LeagueConnectionsCard() {
     }
   }
 
+  async function disconnectYahoo() {
+    setDisconnecting(true);
+    try {
+      const res = await fetch("/api/yahoo/disconnect", { method: "POST" });
+      if (res.ok) {
+        setYahooConnected(false);
+      }
+    } catch {
+      console.error("Failed to disconnect Yahoo");
+    } finally {
+      setDisconnecting(false);
+    }
+  }
+
+  async function disconnectSleeper() {
+    setDisconnecting(true);
+    try {
+      const res = await fetch("/api/sleeper/disconnect", { method: "POST" });
+      if (res.ok) {
+        setSleeperConnected(false);
+        setSleeperUsername("");
+        setSleeperInput("");
+      }
+    } catch {
+      console.error("Failed to disconnect Sleeper");
+    } finally {
+      setDisconnecting(false);
+    }
+  }
+
   return (
     <div className="rounded-2xl border border-white/10 bg-[#11161d] p-8">
       <h3 className="text-lg font-bold mb-6">Connected Leagues</h3>
@@ -544,7 +575,13 @@ function LeagueConnectionsCard() {
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-semibold">Yahoo Fantasy</span>
           {yahooConnected ? (
-            <span className="rounded-full bg-green-500/15 px-3 py-1 text-xs font-bold text-green-400">Connected</span>
+            <button
+              onClick={() => disconnectYahoo()}
+              disabled={disconnecting}
+              className="rounded-lg border border-red-500/30 px-4 py-1.5 text-xs font-semibold text-red-400 transition hover:bg-red-500/10 disabled:opacity-50"
+            >
+              {disconnecting ? "…" : "Disconnect"}
+            </button>
           ) : (
             <a
               href="/api/yahoo/auth"
@@ -562,9 +599,18 @@ function LeagueConnectionsCard() {
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-semibold">Sleeper</span>
           {sleeperConnected && (
-            <span className="rounded-full bg-green-500/15 px-3 py-1 text-xs font-bold text-green-400">
-              Connected · @{sleeperUsername}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full bg-green-500/15 px-3 py-1 text-xs font-bold text-green-400">
+                Connected · @{sleeperUsername}
+              </span>
+              <button
+                onClick={() => disconnectSleeper()}
+                disabled={disconnecting}
+                className="rounded-lg border border-red-500/30 px-4 py-1.5 text-xs font-semibold text-red-400 transition hover:bg-red-500/10 disabled:opacity-50"
+              >
+                {disconnecting ? "…" : "Disconnect"}
+              </button>
+            </div>
           )}
         </div>
         <p className="text-xs text-zinc-600 mb-3">Enter your Sleeper username — no OAuth needed, Sleeper's API is public.</p>

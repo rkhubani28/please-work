@@ -1,4 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -34,6 +36,38 @@ export async function GET(request: NextRequest) {
   }
 
   const tokens = await tokenRes.json();
+
+  // Fetch Yahoo user info to get yahoo_user_id
+  let yahooUserId: string | null = null;
+  try {
+    const userRes = await fetch("https://fantasysports.yahooapis.com/fantasy/v2/users;format=json", {
+      headers: { Authorization: `Bearer ${tokens.access_token}` },
+    });
+    if (userRes.ok) {
+      const userData = await userRes.json();
+      yahooUserId = userData.fantasy_content?.users?.[0]?.user?.[0]?.id;
+    }
+  } catch (err) {
+    console.error("Failed to fetch Yahoo user info:", err);
+  }
+
+  // Store yahoo_user_id in auth metadata for future reference
+  if (yahooUserId) {
+    const cookieStore = cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { cookies: { getAll: () => cookieStore.getAll() } }
+    );
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      // Store yahoo_user_id in auth metadata
+      await supabase.auth.updateUser({
+        data: { yahoo_user_id: yahooUserId },
+      });
+    }
+  }
 
   // Store the Yahoo access token in a cookie for subsequent API calls
   const response = NextResponse.redirect(`${origin}/dashboard?yahoo=connected`);
