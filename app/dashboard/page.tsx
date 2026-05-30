@@ -19,11 +19,27 @@ export default function DashboardPage() {
   const [active, setActive] = useState<Section>("dashboard");
   const [connected, setConnected] = useState<boolean | null>(null);
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const supabase = createClient();
+
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user);
+
+      // Check if user has a plan selected
+      if (data.user) {
+        const userPlan = data.user.user_metadata?.selected_plan;
+        const userTier = data.user.user_metadata?.selected_tier;
+
+        // If no plan selected, redirect to quiz
+        if (!userPlan || !userTier) {
+          window.location.href = "/onboarding/quiz";
+          return;
+        }
+      }
+
+      setLoading(false);
     });
 
     fetch("/api/yahoo/status")
@@ -416,5 +432,67 @@ function SectionTrade() {
 }
 
 function SectionSettings() {
-  return <div className="p-10 text-zinc-400">Settings Coming Soon</div>;
+  const [user, setUser] = useState<any>(null);
+  const [currentPlan, setCurrentPlan] = useState("");
+  const [currentTier, setCurrentTier] = useState("");
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+      setCurrentPlan(data.user?.user_metadata?.selected_plan || "");
+      setCurrentTier(data.user?.user_metadata?.selected_tier || "");
+    });
+  }, []);
+
+  const handleChangePlan = () => {
+    window.location.href = "/onboarding/quiz?change-plan=true";
+  };
+
+  const handleChangePlanDirect = (newTier: string, newPlan: string) => {
+    const supabase = createClient();
+    supabase.auth.updateUser({
+      data: {
+        selected_plan: newPlan,
+        selected_tier: newTier,
+      },
+    }).then(() => {
+      setCurrentPlan(newPlan);
+      setCurrentTier(newTier);
+      window.location.reload();
+    });
+  };
+
+  return (
+    <div className="p-10">
+      <h2 className="font-display text-4xl font-black mb-8">SETTINGS</h2>
+
+      {/* Plan Management Card */}
+      <div className="bg-black/40 border border-zinc-700/50 rounded-lg p-6 max-w-md mb-8">
+        <h3 className="font-display text-lg font-bold uppercase mb-6">YOUR PLAN</h3>
+
+        <div className="mb-6 p-4 bg-white/5 border border-cyan-400/30 rounded">
+          <p className="text-sm text-zinc-400 uppercase tracking-wider mb-1">Current Plan</p>
+          <p className="font-display text-2xl font-bold text-cyan-300 uppercase">
+            {currentTier === "free"
+              ? "Free"
+              : currentTier === "all-access"
+                ? `All-Access • ${currentPlan}`
+                : `League Newsroom • ${currentPlan}`}
+          </p>
+        </div>
+
+        <button
+          onClick={handleChangePlan}
+          className="w-full px-4 py-2 border border-cyan-400/50 text-cyan-300 text-xs uppercase font-bold hover:bg-cyan-400/10 transition rounded"
+        >
+          CHANGE PLAN
+        </button>
+
+        <p className="text-xs text-zinc-500 mt-4">
+          You can change your plan anytime. Changes take effect immediately.
+        </p>
+      </div>
+    </div>
+  );
 }

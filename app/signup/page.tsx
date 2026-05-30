@@ -8,6 +8,23 @@ import { SportsHQLogo } from "@/components/SportLogo";
 
 export default function SignupPage() {
   const router = useRouter();
+
+  // Redirect to onboarding quiz on mount
+  React.useEffect(() => {
+    router.push("/onboarding/quiz?signup=true");
+  }, [router]);
+
+  return (
+    <div className="min-h-screen bg-obsidian-900 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-pulse text-white">Redirecting to onboarding...</div>
+      </div>
+    </div>
+  );
+}
+
+function SignupPageOld() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

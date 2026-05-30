@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import type { TierType, PlanType } from "@/lib/types";
 
 type QuestionType = "q1" | "q2" | "q3" | "q3a" | "q3b";
@@ -13,8 +14,12 @@ interface QuizState {
   focus?: "content" | "balanced" | "analytical";
 }
 
-export default function QuizPage() {
+function QuizContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isSignup = searchParams.get("signup") === "true";
+  const isChangePlan = searchParams.get("change-plan") === "true";
+
   const [state, setState] = useState<QuizState>({});
   const [currentQuestion, setCurrentQuestion] = useState<QuestionType>("q1");
 
@@ -80,9 +85,10 @@ export default function QuizPage() {
   }
 
   function submitQuiz(tier: TierType, plan: PlanType) {
-    router.push(
-      `/onboarding/result?tier=${tier}&plan=${plan}`
-    );
+    let url = `/onboarding/result?tier=${tier}&plan=${plan}`;
+    if (isSignup) url += "&signup=true";
+    if (isChangePlan) url += "&change-plan=true";
+    router.push(url);
   }
 
   function back() {
@@ -149,6 +155,14 @@ export default function QuizPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function QuizPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-obsidian-900" />}>
+      <QuizContent />
+    </Suspense>
   );
 }
 
